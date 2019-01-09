@@ -47,8 +47,8 @@ static void	reap_child(int sig)
     save_errno = errno;
     while ((pid = wait4(-1, &status, WNOHANG, NULL)) > 0)
 	{
-		print_header(0);
-		printf("process %d exit with status %d\n", pid, status);
+		print_header(0); //UNSAFE
+		printf("process %d exit with status %d\n", pid, status); //UNSAFE
     }
     errno = save_errno;
 }
