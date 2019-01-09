@@ -30,7 +30,6 @@
 #include "libft.h"
 #include "error.h"
 #include "message.h"
-#include "command.h"
 
 int			ft_atoi_sane(char const *s, t_bool *sane);
 

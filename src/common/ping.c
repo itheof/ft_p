@@ -10,26 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "client.h"
 #include "common.h"
 
-t_bool	exec_cmd_ping(char * const *args, int sock, char const **reason,
-		t_bool *should_quit)
+t_bool	exec_cmd_ping(char * const *args, char const **reason, t_cenv *e)
 {
 	t_message	*msg;
 	t_ecode		err;
 	t_bool		ret;
 
 	(void)args;
-	if ((err = message_send(E_MESSAGE_PING, NULL, 0, sock)))
+	if ((err = message_send(E_MESSAGE_PING, NULL, 0, e->sock)))
 	{
 		*reason = error_get_string(err);
-		*should_quit = true;
+		e->should_quit = true;
 		return false;
 	}
-	if ((err = message_receive(&msg, sock)))
+	if ((err = message_receive(&msg, e->sock)))
 	{
 		*reason = error_get_string(err);
-		*should_quit = true;
+		e->should_quit = true;
 		return false;
 	}
 	ret = msg->hd.op == E_MESSAGE_OK;
