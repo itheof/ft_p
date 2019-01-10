@@ -30,6 +30,9 @@ CLIENT_SOURCES = $(addprefix client/,\
 				 command.c)
 
 SERVER_SOURCES = $(addprefix server/,\
+				 misc.c\
+				 init.c\
+				 worker.c\
 				 server.c)
 
 # Sources

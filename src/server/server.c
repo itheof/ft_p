@@ -10,159 +10,89 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "common.h"
-#include "serveur.h"
-#include <unistd.h>
+#include "server.h"
 
-#define LOG_PADDING 8
 // TODO limit max forks
+//
+static sig_atomic_t	g_zombie_child_flag = 0;
 
-static void	print_header(pid_t pid)
+static void	set_zombie_child_flag(int sig)
 {
-	pid_t	tmp;
-	int		i;
-
-	tmp = pid;
-	i = sizeof("()") - sizeof("");
-	while (tmp > 0)
-	{
-		tmp /= 10;
-		i++;
-	}
-	assert(LOG_PADDING >= i);
-	if (pid) // this can be optimized obviously
-		printf("worker(%d)%*c: ", pid, LOG_PADDING - i, ' ');
-	else
-		printf("\033[31m" "master" "\033[0m" "%*c: ", LOG_PADDING, ' ');
+	(void)sig;
+	g_zombie_child_flag = 1;
 }
 
-
-static void	reap_child(int sig)
+static void	reap_children(void) //FIXME
 {
-    int 	save_errno;
 	int		status;
 	pid_t	pid;
 
-	(void)sig;
-    save_errno = errno;
+	//TODO mask handler
     while ((pid = wait4(-1, &status, WNOHANG, NULL)) > 0)
 	{
-		print_header(0); //UNSAFE
-		printf("process %d exit with status %d\n", pid, status); //UNSAFE
+		print_header(0);
+		printf("process %d exit with status %d\n", pid, status);
     }
-    errno = save_errno;
+	g_zombie_child_flag = 0;
+	//TODO unmask handler
+	
 }
 
-static int	get_socket(int port) // TODO error handling return -1
+t_bool	set_signal_handler(void)
 {
-	int	sock;
-	struct protoent	*proto;
-	struct sockaddr_in	sin;
+	struct sigaction	act;
 
-	proto = getprotobyname("tcp");
-	if (proto == 0)
-		return (-1);
-	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);
-	if (bind(sock, (const struct sockaddr *)&sin, sizeof(sin)) == -1)
+	sigemptyset(&act.sa_mask);
+	act.sa_handler = set_zombie_child_flag;
+	act.sa_flags = SA_NOCLDSTOP;
+
+	if (sigaction(SIGCHLD, &act, NULL) == -1)
 	{
-		perror("bind");
-		exit(2);
-	}
-	listen(sock, 42);
-	return (sock);
-}
-
-static void	handle_connection(t_env *env, int cs)
-{
-	t_message	*msg;
-	t_ecode		err;
-
-	close(env->lsock);
-
-	/* Work */
-	while (!(err = message_receive(&msg, cs)))
-	{
-		switch (msg->hd.op) {
-		case E_MESSAGE_PING:
-			message_send(E_MESSAGE_OK, NULL, 0, cs);
-			print_header(env->pid);
-			printf("pong\n");
-			break;
-		default:
-			print_header(env->pid);
-			printf("received unimplemented op %d, skipping\n", msg->hd.op);
-			break;
-		}
-		message_destroy(msg);
-	}
-	//TODO handle err code
-	print_header(env->pid);
-	printf("%s\n", error_get_string(err));
-
-	close(cs);
-	exit(EXIT_SUCCESS);
-}
-
-static int	init(t_env *env, int ac, char const *av[])
-{
-	t_bool		sane;
-	int			port;
-
-	if (ac == 2)
-		port = ft_atoi_sane(av[1], &sane);
-	else
-		sane = false;
-	if (!sane)
-	{
-		printf("Usage: %s PORT\n", av[0]);
+		perror("sigaction");
 		return (false);
 	}
-	if ((env->lsock = get_socket(port)) < 0)
-		return (false);
-	env->pid = 0;
-	if (signal(SIGCHLD, reap_child) == SIG_ERR)
-	{
-		perror("signal");
-		return (false);
-	}
-	print_header(0);
-	printf("listening on port %d\n", port);
 	return (true);
+}
+
+static void		attempt_new_connection(int cs, t_env *env)
+{
+	pid_t	pid;
+
+	if ((pid = fork()) < 0)
+		perror("fork");
+	else if (pid)
+	{
+		print_header(env->pid);
+		printf("spawned a new child %d\n", pid);
+	}
+	else
+	{
+		connection_worker(env, cs);
+	}
 }
 
 int				main(int ac, char const *av[])
 {
-	unsigned int		cslen;
-	struct sockaddr_in	csin;
-	int					cs;
-	pid_t				pid;
-	t_env				env;
+	unsigned int	cslen;
+	struct sockaddr	csin;
+	int				cs;
+	t_env			env;
 
 	if (!init(&env, ac, av))
 		return (1);
-	setpgrp();
 	while (true)
 	{
-		if ((cs = accept(env.lsock, (struct sockaddr*)&csin, &cslen)) == -1)
+		if (g_zombie_child_flag)
+			reap_children();
+		//FIXME: if a child process dies after the handler is unmasked and
+		//       before the syscall, it will be waited for after the syscall
+		if ((cs = accept(env.lsock, &csin, &cslen)) == -1)
 		{
-			perror("accept");
+			if (errno != EINTR)
+				perror("accept");
 			continue ;
 		}
-		if ((pid = fork()) < 0)
-			perror("fork");
-		else if (!pid)
-		{
-			env.pid = getpid();
-			handle_connection(&env, cs);
-		}
-		else
-		{
-			print_header(env.pid);
-			printf("spawned a new child %d\n", pid);
-		}
+		attempt_new_connection(cs, &env);
 		close(cs);
     }
 	close(env.lsock);
