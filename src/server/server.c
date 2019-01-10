@@ -14,7 +14,7 @@
 
 // TODO limit max forks
 //
-static sig_atomic_t	g_zombie_child_flag = 0;
+static volatile sig_atomic_t	g_zombie_child_flag = 0;
 
 static void	set_zombie_child_flag(int sig)
 {
@@ -54,7 +54,7 @@ t_bool	set_signal_handler(void)
 	return (true);
 }
 
-static void		attempt_new_connection(int cs, t_env *env)
+static void		attempt_new_connection(int cs, t_master_env *menv)
 {
 	pid_t	pid;
 
@@ -62,12 +62,14 @@ static void		attempt_new_connection(int cs, t_env *env)
 		perror("fork");
 	else if (pid)
 	{
-		print_header(env->pid);
+		print_header(menv->pid);
 		printf("spawned a new child %d\n", pid);
 	}
 	else
 	{
-		connection_worker(env, cs);
+		close(menv->lsock);
+		//we might want to restore default signal disposition
+		connection_worker(cs);
 	}
 }
 
@@ -76,9 +78,9 @@ int				main(int ac, char const *av[])
 	unsigned int	cslen;
 	struct sockaddr	csin;
 	int				cs;
-	t_env			env;
+	t_master_env	menv;
 
-	if (!init(&env, ac, av))
+	if (!master_init(&menv, ac, av))
 		return (1);
 	while (true)
 	{
@@ -86,15 +88,15 @@ int				main(int ac, char const *av[])
 			reap_children();
 		//FIXME: if a child process dies after the handler is unmasked and
 		//       before the syscall, it will be waited for after the syscall
-		if ((cs = accept(env.lsock, &csin, &cslen)) == -1)
+		if ((cs = accept(menv.lsock, &csin, &cslen)) == -1)
 		{
 			if (errno != EINTR)
 				perror("accept");
 			continue ;
 		}
-		attempt_new_connection(cs, &env);
+		attempt_new_connection(cs, &menv);
 		close(cs);
     }
-	close(env.lsock);
+	close(menv.lsock);
 	return (0);
 }

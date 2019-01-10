@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ping.c                                             :+:      :+:    :+:   */
+/*   help.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,28 +11,21 @@
 /* ************************************************************************** */
 
 #include "client.h"
-#include "common.h"
 
-t_bool	exec_cmd_ping(char * const *args, char const **reason, t_env *e)
+extern t_command g_commands[COMMANDS_LEN];
+
+t_bool	exec_cmd_help(char * const *args, char const **reason, t_env *e)
 {
-	t_message	*msg;
-	t_ecode		err;
-	t_bool		ret;
+	size_t	n;
 
-	(void)args;
-	if ((err = message_send(E_MESSAGE_PING, NULL, 0, e->csock)))
+	(void)args;//TODO: Use arg1 to only display help for this command
+	(void)e;
+	(void)reason;
+	n = 0;
+	while (n < sizeof(g_commands) / sizeof(g_commands[0]))
 	{
-		*reason = error_get_string(err);
-		e->should_quit = true;
-		return false;
+		printf("%-6s| %s\n", g_commands[n].name, g_commands[n].desc);
+		n++;
 	}
-	if ((err = message_receive(&msg, e->csock)))
-	{
-		*reason = error_get_string(err);
-		e->should_quit = true;
-		return false;
-	}
-	ret = msg->hd.op == E_MESSAGE_OK;
-	message_destroy(msg);
-	return (ret);
+	return (true);
 }

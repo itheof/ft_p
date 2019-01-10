@@ -31,7 +31,7 @@ CLIENT_SOURCES = $(addprefix client/,\
 
 SERVER_SOURCES = $(addprefix server/,\
 				 misc.c\
-				 init.c\
+				 master_init.c\
 				 worker.c\
 				 server.c)
 

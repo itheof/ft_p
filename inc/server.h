@@ -17,16 +17,18 @@
 # include <signal.h>
 # include <unistd.h>
 
-typedef struct	s_env {
-	int 	lsock;
-	pid_t	pid;
-}				t_env;
+typedef struct	s_master_env
+{
+	struct s_env	env;
+	int				lsock;
+	pid_t			pid;
+}				t_master_env;
 
 /*
 ** worker.c
 */
 
-void	connection_worker(t_env *env, int cs);
+void	connection_worker(int cs);
 
 /*
 ** misc.c
@@ -35,10 +37,10 @@ void	connection_worker(t_env *env, int cs);
 void	print_header(pid_t pid);
 
 /*
-** init.c
+** master_init.c
 */
 
-int		init(t_env *env, int ac, char const *av[]);
+int		master_init(t_master_env *menv, int ac, char const *av[]);
 
 /*
 ** server.c

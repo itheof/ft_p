@@ -31,6 +31,13 @@
 #include "error.h"
 #include "message.h"
 
+typedef struct	s_env
+{
+	t_bool	should_quit;
+	int		csock;
+	pid_t	pid;
+}				t_env;
+
 int			ft_atoi_sane(char const *s, t_bool *sane);
 
 /* Those functions block until the socket is closed on the other end or nbytes

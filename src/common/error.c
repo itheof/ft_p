@@ -6,6 +6,7 @@ static char const	*(g_err_desc[]) = {
 	[E_ERR_CLOSED] = "connection closed by peer",
 	[E_ERR_INCOMPLETE_HEADER] = "received partial ft_p header",
 	[E_ERR_INCOMPLETE_PAYLOAD] = "received partial ft_p payload",
+	[E_ERR_UNIMPLEMENTED_OP] = "received unimplemented opcode",
 	[E_ERR_INVALID_OP] = "received invalid opcode",
 	[E_ERR_READ] = "read error",
 	[E_ERR_WRITE] = "write error",

@@ -18,12 +18,6 @@
 
 # define COMMANDS_LEN 11
 
-typedef struct	s_cenv
-{
-	int		sock;
-	t_bool	should_quit;
-}				t_cenv;
-
 typedef struct	s_arg
 {
 	char const	*name;
@@ -38,15 +32,15 @@ typedef struct	s_command
 	size_t		nargs;
 	t_bool		local;
 	t_bool		(*exec)(char * const *args,
-			char const **reason, t_cenv *e);
+			char const **reason, t_env *e);
 }				t_command;
 
 t_bool			command_exec(char * const *args,
-		char const **reason, t_cenv *e);
+		char const **reason, t_env *e);
 
 t_bool			exec_cmd_help(char * const *args,
-		char const **reason, t_cenv *e);
+		char const **reason, t_env *e);
 t_bool			exec_cmd_ping(char * const *args,
-		char const **reason, t_cenv *e);
+		char const **reason, t_env *e);
 
 #endif
