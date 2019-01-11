@@ -37,27 +37,65 @@ static int	get_socket(int port) // TODO error handling return -1
 	return (sock);
 }
 
+static t_bool	parse_cl_fail(t_master_env *menv, char const *name)
+{
+	menv->env.log(&menv->env, "Usage: %s [-d chbasedir] PORT\n", name);
+	return (false);
+}
+
+static t_bool	parse_cl(t_master_env *menv, int ac, char const *av[])
+{
+	t_bool	sane;
+	t_opt	state;
+	int		opt;
+
+	ft_memset(&state, 0, sizeof(state));
+	while ((opt = ft_getopt(ac, av, "d:", &state)) != -1)
+	{
+		if (opt == '?')
+			return (parse_cl_fail(menv, av[0]));
+		else if (opt == 'd')
+			menv->base_dir = state.optarg;
+	}
+	if (ac - state.optind != 1)
+		return (parse_cl_fail(menv, av[0]));
+	menv->port = ft_atoi_sane(av[state.optind], &sane);
+	if (!sane)
+		return (parse_cl_fail(menv, av[0]));
+	return (true);
+}
+
+static t_bool	attempt_chdir(t_master_env *menv)
+{
+	if (menv->base_dir)
+	{
+		if (chdir(menv->base_dir) != 0)
+		{
+			menv->env.log(&menv->env, "chdir(\"%s\"): %s", menv->base_dir,
+					strerror(errno));
+			return (false);
+		}
+		else
+			menv->env.log(&menv->env, "successfully changed directory to %s",
+					menv->base_dir);
+	}
+	return (true);
+}
+
 int	master_init(t_master_env *menv, int ac, char const *av[])
 {
-	t_bool		sane;
-	int			port;
-
-	menv->env.log = log_with_pid;
-	if (ac == 2)
-		port = ft_atoi_sane(av[1], &sane);
-	else
-		sane = false;
-	if (!sane)
-	{
-		printf("Usage: %s PORT\n", av[0]);
-		return (false);
-	}
-	if ((menv->lsock = get_socket(port)) < 0)
-		return (false);
 	menv->env.pid = 0;
+	menv->env.log = log_with_pid;
+	menv->base_dir = NULL;
+	if (!parse_cl(menv, ac, av))
+		return (false);
+	if (!attempt_chdir(menv))
+		return (false);
+	if ((menv->lsock = get_socket(menv->port)) < 0)
+		return (false);
 	if (!set_signal_handler())
 		return (false);
-	menv->env.log(&menv->env, "listening on port %d\n", port);
+	menv->env.log(&menv->env, "listening on port %d\n", menv->port);
 	
 	// allow killing the master process and its children through the same PG
 	// an interactive shell already setpgrp's before exec'ing. enforce this

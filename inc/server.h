@@ -23,6 +23,8 @@ typedef struct	s_master_env
 {
 	struct s_env	env;
 	int				lsock;
+	int				port;
+	char const		*base_dir;
 }				t_master_env;
 
 /*
@@ -56,5 +58,6 @@ t_bool	set_signal_handler(void);
 
 t_ecode	pwd_op_handler(t_message *msg, t_env *env);
 t_ecode	ping_op_handler(t_message *msg, t_env *env);
+t_ecode	cd_op_handler(t_message *msg, t_env *env);
 
 #endif

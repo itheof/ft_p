@@ -36,8 +36,8 @@ static int	log_with_pid(t_env const *env, char const *format, ...)
 }
 static const t_op_handler	g_op_handlers[E_MESSAGE_MAX] = {
 	[E_MESSAGE_PING] = ping_op_handler,
-/*	[E_MESSAGE_LS] =,
-	[E_MESSAGE_CD] =,
+	[E_MESSAGE_CD] = cd_op_handler,
+/*  [E_MESSAGE_LS] =,
 	[E_MESSAGE_GET] =,
 	[E_MESSAGE_PUT] =,*/
 	[E_MESSAGE_PWD] = pwd_op_handler,
@@ -45,6 +45,7 @@ static const t_op_handler	g_op_handlers[E_MESSAGE_MAX] = {
 
 static void	worker_init(t_env *env, int cs)
 {
+	//register base_path
 	env->log = log_with_pid;
 	env->should_quit = false;
 	env->pid = getpid();

@@ -59,6 +59,7 @@ t_command g_commands[COMMANDS_LEN] = {
 		.desc = "change the remote current directory",
 		.args = NULL,
 		.nargs = 1,
+		.exec = exec_cmd_cd,
 	},
 	{
 		.name = "get",

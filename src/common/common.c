@@ -12,6 +12,13 @@
 
 #include "common.h"
 
+t_bool	command_abort(t_ecode err, char const **reason, t_bool *should_quit)
+{
+	*should_quit = true;
+	*reason = error_get_string(err);
+	return (false);
+}
+
 t_ecode	message_send_unknown_err(int sock, int errnum)
 {
 	size_t		len;
