@@ -39,7 +39,7 @@ typedef struct	s_env
 	t_bool	should_quit;
 	int		csock;
 	pid_t	pid;
-	int		(*log)(struct s_env const *env, char const *format, ...);
+	int		(*log)(struct s_env const *env, char const *format, ...) __attribute__ ((format (printf, 2, 3)));
 }				t_env;
 
 int			ft_atoi_sane(char const *s, t_bool *sane);
