@@ -82,6 +82,19 @@ int			loop(t_env *e)
 	return (ret);
 }
 
+int			print(t_env const *e, const char *format, ...)
+{
+	va_list args;
+	int		ret;
+
+	(void)e;
+	va_start(args, format);
+	ret = vprintf(format, args);
+	ret += printf("\n");
+	va_end(args);
+	return (ret);
+}
+
 int			main(int ac, char **av)
 {
 	t_bool	sane;
@@ -89,6 +102,7 @@ int			main(int ac, char **av)
 	int		ret;
 	t_env	e;
 
+	e.log = print;
 	if (ac == 3)
 		port = ft_atoi_sane(av[2], &sane);
 	else

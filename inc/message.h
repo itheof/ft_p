@@ -34,6 +34,7 @@ t_ecode		message_receive(t_message **dst, int sock);
 
 t_ecode		message_send(t_message_op op, void *data, size_t nbyte, int sock);
 
+t_ecode		message_send_unknown_err(int sock, int errnum);
 void		message_destroy(t_message *msg);
 
 #endif

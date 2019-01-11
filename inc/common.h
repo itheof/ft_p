@@ -42,6 +42,16 @@ typedef struct	s_env
 	int		(*log)(struct s_env const *env, char const *format, ...) __attribute__ ((format (printf, 2, 3)));
 }				t_env;
 
+/*
+typedef struct	s_pwd_payload
+{
+	char	pwd[];
+	struct s_pwd_footer {
+		char	nul;
+	}			ft;
+}				t_pwd_payload;
+*/
+
 int			ft_atoi_sane(char const *s, t_bool *sane);
 
 /* Those functions block until the socket is closed on the other end or nbytes
