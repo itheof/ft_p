@@ -22,17 +22,14 @@ static void	set_zombie_child_flag(int sig)
 	g_zombie_child_flag = 1;
 }
 
-static void	reap_children(void) //FIXME
+static void	reap_children(t_env const *env) //FIXME
 {
 	int		status;
 	pid_t	pid;
 
 	//TODO mask handler
     while ((pid = wait4(-1, &status, WNOHANG, NULL)) > 0)
-	{
-		print_header(0);
-		printf("process %d exit with status %d\n", pid, status);
-    }
+		env->log(env, "process %d exit with status %d\n", pid, status);
 	g_zombie_child_flag = 0;
 	//TODO unmask handler
 	
@@ -61,10 +58,7 @@ static void		attempt_new_connection(int cs, t_master_env *menv)
 	if ((pid = fork()) < 0)
 		perror("fork");
 	else if (pid)
-	{
-		print_header(menv->pid);
-		printf("spawned a new child %d\n", pid);
-	}
+		menv->env.log(&menv->env, "spawned a new child %d\n", pid);
 	else
 	{
 		close(menv->lsock);
@@ -75,19 +69,20 @@ static void		attempt_new_connection(int cs, t_master_env *menv)
 
 int				main(int ac, char const *av[])
 {
-	unsigned int	cslen;
-	struct sockaddr	csin;
-	int				cs;
-	t_master_env	menv;
+	unsigned int		cslen;
+	struct sockaddr		csin;
+	int					cs;
+	t_master_env		menv;
 
 	if (!master_init(&menv, ac, av))
 		return (1);
 	while (true)
 	{
 		if (g_zombie_child_flag)
-			reap_children();
+			reap_children(&menv.env);
 		//FIXME: if a child process dies after the handler is unmasked and
 		//       before the syscall, it will be waited for after the syscall
+		cslen = sizeof(csin);
 		if ((cs = accept(menv.lsock, &csin, &cslen)) == -1)
 		{
 			if (errno != EINTR)

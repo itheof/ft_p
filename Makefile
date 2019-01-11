@@ -20,6 +20,7 @@ CFLAGS    += -I./inc
 COM_SOURCES    = $(addprefix common/,\
 				 common.c\
 				 ping.c\
+				 pwd.c\
 				 message.c\
 				 error.c\
 				 sock_raw.c)

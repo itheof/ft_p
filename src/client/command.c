@@ -77,6 +77,7 @@ t_command g_commands[COMMANDS_LEN] = {
 		.desc = "print the remote current directory",
 		.args = NULL,
 		.nargs = 0,
+		.exec = exec_cmd_pwd
 	},
 	{
 		.name = "lcd",

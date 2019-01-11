@@ -10,8 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "client.h"
+#include "server.h"
 #include "common.h"
+
+t_ecode	ping_op_handler(t_message *msg, t_env *env)
+{
+	(void)msg;
+	message_send(E_MESSAGE_OK, NULL, 0, env->csock);
+	env->log(env, "pong\n");
+	return (E_ERR_OK);
+}
 
 t_bool	exec_cmd_ping(char * const *args, char const **reason, t_env *e)
 {

@@ -17,11 +17,12 @@
 # include <signal.h>
 # include <unistd.h>
 
+typedef	t_ecode	(*t_op_handler)(t_message *msg, t_env *env);
+
 typedef struct	s_master_env
 {
 	struct s_env	env;
 	int				lsock;
-	pid_t			pid;
 }				t_master_env;
 
 /*
@@ -47,5 +48,13 @@ int		master_init(t_master_env *menv, int ac, char const *av[]);
 */
 
 t_bool	set_signal_handler(void);
+
+/*
+** ../common
+*/
+
+
+t_ecode	pwd_op_handler(t_message *msg, t_env *env);
+t_ecode	ping_op_handler(t_message *msg, t_env *env);
 
 #endif

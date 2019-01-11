@@ -5,32 +5,47 @@
 ** a custom handler is set for sig
 */
 
-typedef	t_ecode	(*t_op_handler)(t_env *env);
-
-t_ecode	ping_op_handler(t_env *env)
+t_ecode	default_op_handler(t_message *msg, t_env *env)
 {
-	message_send(E_MESSAGE_OK, NULL, 0, env->csock);
-	print_header(env->pid);
-	printf("pong\n");
-}
-
-t_ecode	default_op_handler(t_env *env)
-{
+	(void)msg;
 	env->should_quit = true;
 	return (E_ERR_UNIMPLEMENTED_OP);
 }
+static int	log_with_pid(t_env const *env, char const *format, ...)
+{
+	va_list args;
+	int		ret;
+	pid_t	tmp;
+	int		i;
 
+	tmp = env->pid;
+	i = sizeof("()") - sizeof("");
+	while (tmp > 0)
+	{
+		tmp /= 10;
+		i++;
+	}
+	assert(LOG_PADDING >= i);
+
+	ret = printf("worker(%d)%*c: ", env->pid, LOG_PADDING - i, ' ');
+	va_start(args, format);
+	ret += vprintf(format, args);
+	ret += printf("\n");
+	va_end(args);
+	return (ret);
+}
 static const t_op_handler	g_op_handlers[E_MESSAGE_MAX] = {
 	[E_MESSAGE_PING] = ping_op_handler,
 /*	[E_MESSAGE_LS] =,
 	[E_MESSAGE_CD] =,
 	[E_MESSAGE_GET] =,
-	[E_MESSAGE_PUT] =,
-	[E_MESSAGE_PWD] =,*/
+	[E_MESSAGE_PUT] =,*/
+	[E_MESSAGE_PWD] = pwd_op_handler,
 };
 
 static void	worker_init(t_env *env, int cs)
 {
+	env->log = log_with_pid;
 	env->should_quit = false;
 	env->pid = getpid();
 	env->csock = cs;
@@ -48,14 +63,11 @@ void	connection_worker(int cs)
 	{
 		if (!(handler = g_op_handlers[msg->hd.op]))
 			handler = default_op_handler;
-		err = handler(&env);
+		err = handler(msg, &env);
 		message_destroy(msg);
 	}
 	if (err)
-	{
-		print_header(env.pid);
-		printf("%s\n", error_get_string(err));
-	}
+		env.log(&env, "%s\n", error_get_string(err));
 	close(env.csock);
 	exit(err);
 }
