@@ -68,6 +68,7 @@ static t_bool	parse_cl(t_master_env *menv, int ac, char const *av[])
 static t_bool	setup_basedir(t_master_env *menv)
 {
 	char	*path;
+
 	//TODO: this sets PWD to the realpath of the basedir when it should instead
 	// try to sanitize the logical path that PWD can represent
 	if (menv->base_dir)

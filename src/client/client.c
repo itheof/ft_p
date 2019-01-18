@@ -39,6 +39,11 @@ static int	create_client(char const *addr, int port)
 	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
 	if (sock < 0)
 		return (err("socket"));
+	else if (sock <= STDERR_FILENO)
+	{
+		printf("socket returned a standard FILENO. exiting to prevent hang\n");
+		return (-1);
+	}
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
 	sin.sin_addr.s_addr = *(uint32_t *)host->h_addr;
@@ -62,6 +67,7 @@ int			loop(t_env *e)
 	char const		*reason;
 	
 	e->should_quit = false;
+	ln = NULL;
 	while (!e->should_quit)
 	{
 		prompt();
@@ -79,6 +85,7 @@ int			loop(t_env *e)
 		free(ln);
 		ft_freetab((void**)args);
 	}
+	free(ln);
 	return (ret);
 }
 

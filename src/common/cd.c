@@ -1,9 +1,43 @@
 #include "common.h"
 
+static t_bool	has_basepath(char const *basepath, char const *subpath)
+{
+	size_t	n;
+
+	n = 0;
+	while (basepath[n] != 0 && basepath[n] == subpath[n])
+		n++;
+	if (basepath[n] == 0 && (subpath[n] == '/' || subpath[n] == 0))
+		return (true);
+	if (basepath[n] == '/' && subpath[n] == 0 && basepath[n + 1] == 0)
+		return (true);
+	return (false);
+}
+
+static t_ecode	fail_with_fs_race_condition(t_env *env)
+{
+	env->log(env, "filesystem race condition detected: bailing");
+	env->should_quit = true;
+	return (message_send(E_MESSAGE_ERR, NULL, 0, env->csock));
+}
+
+/*
+ * NOTE: Do not send the error reason to the client: this would lead to
+ * information disclosure when ie attempting to chdir to a not-dir-path outside
+ * the root_path.
+ * Reporting the error cause would require a long spaghetti implementation for
+ * preventing root_dir escaping
+ *
+ * This implementation has tons of possible error conditions, BUT is simple and
+ * secure.
+ * Calls to getcwd after chdir gives us a cheap realpath()
+ *
+ * It does not support logical paths cd
+ */
 t_ecode	cd_op_handler(t_message *msg, t_env *env)
 {
-	int		saved_errno;
 	t_ecode	e;
+	char	*newp;
 
 	if (!msg->hd.size)
 	{
@@ -11,15 +45,38 @@ t_ecode	cd_op_handler(t_message *msg, t_env *env)
 		return (E_ERR_INVALID_PAYLOAD);
 	}
 	msg->payload[msg->hd.size - 1] = '\0';
-	// TODO: sanitize path
+
 	if (chdir(msg->payload) != 0)
 	{
-		saved_errno = errno;
-		env->log(env, "cd: chdir() call failed: %s", strerror(errno));
-		return (message_send_unknown_err(env->csock, saved_errno));
+		env->log(env, "cd: chdir() call failed: %s %s", strerror(errno), msg->payload);
+		return (message_send(E_MESSAGE_ERR, NULL, 0, env->csock));
 	}
-	e = message_send(E_MESSAGE_OK, NULL, 0, env->csock);
-	return (e);
+	if (!(newp = getcwd(NULL, 0)))
+	{
+		env->log(env, "cd: getcwd() call failed: %s", strerror(errno));
+		return (fail_with_fs_race_condition(env));
+	}
+
+	if (has_basepath(env->root_path, newp)) // SUCCESS
+	{
+		env->log(env, "cd: %s -> %s", env->cwd_path, newp);
+		free(env->cwd_path);
+		env->cwd_path = newp;
+		return (message_send(E_MESSAGE_OK, NULL, 0, env->csock));
+	}
+
+	if (chdir(env->cwd_path) == 0) // FAILURE BUT OK
+	{
+		env->log(env, "cd: recovered from illegal chdir: %s "
+				"escapes root_path %s", newp, env->root_path);
+		free(newp);
+		return (message_send(E_MESSAGE_ERR, NULL, 0, env->csock));
+	}
+	else
+	{
+		env->log(env, "cd: chdir() call failed: %s %s", strerror(errno), env->cwd_path);
+		return (fail_with_fs_race_condition(env));
+	}
 }
 
 t_bool	exec_cmd_cd(char * const *args, char const **reason, t_env *e)

@@ -2,22 +2,16 @@
 
 t_ecode	pwd_op_handler(t_message *msg, t_env *env)
 {
-	char	*pwd;
-	int		saved_errno;
-	t_ecode	e;
+	size_t	offset;
 	size_t	len;
 
-	pwd = getcwd(NULL, 0);
-	if (!pwd)
-	{
-		saved_errno = errno;
-		env->log(env, "pwd: getcwd() call failed: %s", strerror(errno));
-		return (message_send_unknown_err(env->csock, saved_errno));
-	}
-	len = ft_strlen(pwd);
-	e = message_send(E_MESSAGE_OK, pwd, len + 1, env->csock);
-	free(pwd);
-	return (e);
+	(void)msg;
+	offset = ft_strlen(env->root_path);
+	len = ft_strlen(env->cwd_path);
+	if (len <= offset)
+		return (message_send(E_MESSAGE_OK, "/", 2, env->csock));
+	else
+		return (message_send(E_MESSAGE_OK, env->cwd_path + offset, len - offset + 1, env->csock));
 }
 
 t_bool	exec_cmd_pwd(char * const *args, char const **reason, t_env *e)

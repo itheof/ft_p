@@ -16,7 +16,7 @@
 # include "common.h"
 # include "libft.h"
 
-# define COMMANDS_LEN 11
+# define COMMANDS_LEN 12
 
 typedef struct	s_arg
 {

@@ -45,7 +45,11 @@ static const t_op_handler	g_op_handlers[E_MESSAGE_MAX] = {
 
 static void	worker_init(t_env *env, int cs)
 {
-	//register base_path
+	char	*path;
+
+	env->root_path = getenv("PWD");
+	env->cwd_path = ft_strdup(env->root_path);
+	assert(env->root_path);
 	env->log = log_with_pid;
 	env->should_quit = false;
 	env->pid = getpid();

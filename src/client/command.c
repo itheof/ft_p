@@ -49,6 +49,13 @@ t_command g_commands[COMMANDS_LEN] = {
 		.exec = exec_cmd_quit
 	},
 	{
+		.name = "exit",
+		.desc = "alias for `quit'",
+		.args = NULL,
+		.nargs = 0,
+		.exec = exec_cmd_quit
+	},
+	{
 		.name = "ls",
 		.desc = "list remote files for the current directory",
 		.args = NULL,

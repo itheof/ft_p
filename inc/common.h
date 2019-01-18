@@ -40,6 +40,8 @@ typedef struct	s_env
 	int		csock;
 	pid_t	pid;
 	int		(*log)(struct s_env const *env, char const *format, ...) __attribute__ ((format (printf, 2, 3)));
+	char	*root_path;
+	char	*cwd_path;
 }				t_env;
 
 t_bool	command_abort(t_ecode err, char const **reason, t_bool *should_quit);
