@@ -65,8 +65,11 @@ static t_bool	parse_cl(t_master_env *menv, int ac, char const *av[])
 	return (true);
 }
 
-static t_bool	attempt_chdir(t_master_env *menv)
+static t_bool	setup_basedir(t_master_env *menv)
 {
+	char	*path;
+	//TODO: this sets PWD to the realpath of the basedir when it should instead
+	// try to sanitize the logical path that PWD can represent
 	if (menv->base_dir)
 	{
 		if (chdir(menv->base_dir) != 0)
@@ -79,6 +82,18 @@ static t_bool	attempt_chdir(t_master_env *menv)
 			menv->env.log(&menv->env, "successfully changed directory to %s",
 					menv->base_dir);
 	}
+	if (!(path = getcwd(NULL, 0)))
+	{
+		menv->env.log(&menv->env, "getcwd: %s", strerror(errno));
+		return (false);
+	}
+	if (setenv("PWD", path, 1) != 0)
+	{
+		menv->env.log(&menv->env, "setenv: %s", strerror(errno));
+		free(path);
+		return (false);
+	}
+	free(path);
 	return (true);
 }
 
@@ -89,7 +104,7 @@ int	master_init(t_master_env *menv, int ac, char const *av[])
 	menv->base_dir = NULL;
 	if (!parse_cl(menv, ac, av))
 		return (false);
-	if (!attempt_chdir(menv))
+	if (!setup_basedir(menv))
 		return (false);
 	if ((menv->lsock = get_socket(menv->port)) < 0)
 		return (false);
