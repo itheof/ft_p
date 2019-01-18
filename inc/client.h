@@ -35,15 +35,11 @@ typedef struct	s_command
 			char const **reason, t_env *e);
 }				t_command;
 
-t_bool			command_exec(char * const *args,
-		char const **reason, t_env *e);
+t_bool			command_exec(char * const *args, char const **reason, t_env *e);
 
-t_bool			exec_cmd_help(char * const *args,
-		char const **reason, t_env *e);
-t_bool			exec_cmd_ping(char * const *args,
-		char const **reason, t_env *e);
-t_bool			exec_cmd_pwd(char * const *args,
-		char const **reason, t_env *e);
-t_bool			exec_cmd_cd(char * const *args,
-		char const **reason, t_env *e);
+t_bool			exec_cmd_help(char * const *args, char const **reason, t_env *e);
+t_bool			exec_cmd_ping(char * const *args, char const **reason, t_env *e);
+t_bool			exec_cmd_pwd(char * const *args, char const **reason, t_env *e);
+t_bool			exec_cmd_cd(char * const *args, char const **reason, t_env *e);
+t_bool			exec_cmd_ls(char * const *args, char const **reason, t_env *e);
 #endif

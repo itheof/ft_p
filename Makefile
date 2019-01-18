@@ -22,6 +22,7 @@ COM_SOURCES    = $(addprefix common/,\
 				 ping.c\
 				 pwd.c\
 				 cd.c\
+				 ls.c\
 				 message.c\
 				 error.c\
 				 sock_raw.c)

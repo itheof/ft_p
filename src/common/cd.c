@@ -36,7 +36,6 @@ static t_ecode	fail_with_fs_race_condition(t_env *env)
  */
 t_ecode	cd_op_handler(t_message *msg, t_env *env)
 {
-	t_ecode	e;
 	char	*newp;
 
 	if (!msg->hd.size)
@@ -96,7 +95,7 @@ t_bool	exec_cmd_cd(char * const *args, char const **reason, t_env *e)
 	else if (msg->hd.op == E_MESSAGE_ERR)
 	{
 		if (msg->hd.size > 0)
-			e->log(e, "server: %*s", msg->hd.size - 1, msg->payload);
+			e->log(e, "server: %.*s", msg->hd.size - 1, msg->payload);
 		*reason = error_get_string(E_ERR_SERVER);
 	}
 	else

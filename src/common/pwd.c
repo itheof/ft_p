@@ -38,7 +38,7 @@ t_bool	exec_cmd_pwd(char * const *args, char const **reason, t_env *e)
 	{
 		if (msg->hd.size > 0)
 		{
-			e->log(e, "%*s", msg->hd.size - 1, msg->payload);
+			e->log(e, "%.*s", msg->hd.size - 1, msg->payload);
 			ret = true;
 		}
 		else
@@ -47,7 +47,7 @@ t_bool	exec_cmd_pwd(char * const *args, char const **reason, t_env *e)
 	else if (msg->hd.op == E_MESSAGE_ERR)
 	{
 		if (msg->hd.size > 0)
-			e->log(e, "server: %*s", msg->hd.size - 1, msg->payload);
+			e->log(e, "server: %.*s", msg->hd.size - 1, msg->payload);
 		*reason = error_get_string(E_ERR_SERVER);
 	}
 	else

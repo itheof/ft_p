@@ -59,5 +59,6 @@ t_bool	set_signal_handler(void);
 t_ecode	pwd_op_handler(t_message *msg, t_env *env);
 t_ecode	ping_op_handler(t_message *msg, t_env *env);
 t_ecode	cd_op_handler(t_message *msg, t_env *env);
+t_ecode	ls_op_handler(t_message *msg, t_env *env);
 
 #endif
