@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+watch () {
+	if [[ `uname` == 'Linux' ]]
+	then
+		inotifywait $@
+	else
+		fswatch -1 $@
+	fi
+}
+
 if [ ! -x server ];
 then
 	echo "usage: $0"
@@ -18,7 +27,7 @@ trap onexit INT
 
 ./server 8081 &
 serverpid=$!
-2>/dev/null inotifywait ./server
+2>/dev/null watch ./server
 kill -- -$serverpid
 
 clear
