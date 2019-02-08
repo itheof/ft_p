@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/02/08 14:16:56 by tvallee           #+#    #+#             */
+/*   Updated: 2019/02/08 14:44:41 by tvallee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef ERROR_H
 # define ERROR_H
 
@@ -18,6 +30,9 @@ typedef enum	e_ecode
 	E_ERR_WRITE,
 	E_ERR_MMAP,
 	E_ERR_FTRUNC,
+	E_ERR_OPENDIR,
+	E_ERR_CHDIR,
+	E_ERR_GETCWD,
 	E_ERR_MALLOC,
 	E_ERR_OPEN,
 	E_ERR_MAX,

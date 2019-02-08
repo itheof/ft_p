@@ -6,7 +6,7 @@
 /*   By: tvallee <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/02 15:40:34 by tvallee           #+#    #+#             */
-/*   Updated: 2018/12/17 15:56:25 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 14:37:42 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,11 @@ int			main(int ac, char **av)
 	if (!sane)
 	{
 		usage(av[0]);
+		return (1);
+	}
+	if (!(e.cwd_path = getcwd(NULL, 0)))
+	{
+		perror("getcwd");
 		return (1);
 	}
 	if ((e.csock = create_client(av[1], port)) < 0)

@@ -19,6 +19,9 @@ static char const	*(g_err_desc[]) = {
 	[E_ERR_WRITE] = "write error",
 	[E_ERR_MMAP] = "mmap error",
 	[E_ERR_FTRUNC] = "ftruncate error",
+	[E_ERR_OPENDIR] = "opendir error",
+	[E_ERR_CHDIR] = "chdir error",
+	[E_ERR_GETCWD] = "getcwd error",
 	[E_ERR_MALLOC] = "malloc error",
 	[E_ERR_OPEN] = "open error",
 };

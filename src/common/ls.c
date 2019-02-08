@@ -19,11 +19,7 @@ t_ecode	ls_op_handler(t_message *msg, t_env *env)
 	{
 		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
 			continue ;
-#if defined(__APPLE__)
-		if ((err = message_send(E_MESSAGE_OK, dp->d_name, dp->d_namlen, env->csock)))
-#else
 		if ((err = message_send(E_MESSAGE_OK, dp->d_name, ft_strlen(dp->d_name), env->csock)))
-#endif
 		{
 			closedir(dirp);
 			env->should_quit = true;
@@ -32,6 +28,29 @@ t_ecode	ls_op_handler(t_message *msg, t_env *env)
 	}
 	closedir(dirp);
 	return (message_send(E_MESSAGE_OK, NULL, 0, env->csock));
+}
+
+t_bool	exec_cmd_lls(char * const *args, char const **reason, t_env *e)
+{
+	DIR				*dirp;
+	struct dirent	*dp;
+
+	(void)args;
+	dirp = opendir(".");
+	if (dirp == NULL)
+	{
+		e->log(e, "ls: opendir() failed: %s", strerror(errno));
+		*reason = error_get_string(E_ERR_OPENDIR);
+		return (false);
+	}
+	while ((dp = readdir(dirp)) != NULL)
+	{
+		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+			continue ;
+		fprintf(stdout, "%s\n", dp->d_name);
+	}
+	closedir(dirp);
+	return (true);
 }
 
 t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)

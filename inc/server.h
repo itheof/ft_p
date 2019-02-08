@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:18 by tvallee           #+#    #+#             */
-/*   Updated: 2018/12/17 16:24:22 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 14:18:30 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,35 +31,34 @@ typedef struct	s_master_env
 ** worker.c
 */
 
-void	connection_worker(int cs);
+void			connection_worker(int cs);
 
 /*
 ** misc.c
 */
 
-void	print_header(pid_t pid);
+void			print_header(pid_t pid);
 
 /*
 ** master_init.c
 */
 
-int		master_init(t_master_env *menv, int ac, char const *av[]);
+int				master_init(t_master_env *menv, int ac, char const *av[]);
 
 /*
 ** server.c
 */
 
-t_bool	set_signal_handler(void);
+t_bool			set_signal_handler(void);
 
 /*
 ** ../common
 */
 
-
-t_ecode	pwd_op_handler(t_message *msg, t_env *env);
-t_ecode	ping_op_handler(t_message *msg, t_env *env);
-t_ecode	cd_op_handler(t_message *msg, t_env *env);
-t_ecode	ls_op_handler(t_message *msg, t_env *env);
-t_ecode	get_op_handler(t_message *msg, t_env *env);
+t_ecode			pwd_op_handler(t_message *msg, t_env *env);
+t_ecode			ping_op_handler(t_message *msg, t_env *env);
+t_ecode			cd_op_handler(t_message *msg, t_env *env);
+t_ecode			ls_op_handler(t_message *msg, t_env *env);
+t_ecode			get_op_handler(t_message *msg, t_env *env);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2018/12/17 15:57:55 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 14:46:14 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,18 +94,21 @@ t_command g_commands[COMMANDS_LEN] = {
 		.desc = "change the local current directory",
 		.args = NULL,
 		.nargs = 1,
+		.exec = exec_cmd_lcd
 	},
 	{
 		.name = "lpwd",
 		.desc = "print the local current directory",
 		.args = NULL,
-		.nargs = 0
+		.nargs = 0,
+		.exec = exec_cmd_lpwd
 	},
 	{
 		.name = "lls",
 		.desc = "list local files for the current directory",
 		.args = NULL,
-		.nargs = 0
+		.nargs = 0,
+		.exec = exec_cmd_lls
 	}
 };
 

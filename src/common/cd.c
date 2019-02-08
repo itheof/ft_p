@@ -82,6 +82,26 @@ t_ecode	cd_op_handler(t_message *msg, t_env *env)
 	}
 }
 
+t_bool	exec_cmd_lcd(char *const *args, char const **reason, t_env *e)
+{
+	if (chdir(args[1]) != 0)
+	{
+		perror("chdir");
+		*reason = error_get_string(E_ERR_CHDIR);
+		return (false);
+	}
+	free(e->cwd_path);
+	if (!(e->cwd_path = getcwd(NULL, 0)))
+	{
+		perror("getcwd");
+		*reason = error_get_string(E_ERR_GETCWD);
+		e->should_quit = true;
+		// XXX using e->cwd_path is now UB
+		return (false);
+	}
+	return (true);
+}
+
 t_bool	exec_cmd_cd(char * const *args, char const **reason, t_env *e)
 {
 	t_message	*msg;
