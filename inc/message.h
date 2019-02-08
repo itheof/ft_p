@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 14:17:09 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:17:38 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 21:24:06 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef enum	e_message_op
 	E_MESSAGE_CD,
 	E_MESSAGE_GET,
 	E_MESSAGE_PUT,
+	E_MESSAGE_PUT_SIZE,
 	E_MESSAGE_PWD,
 
 	E_MESSAGE_MAX

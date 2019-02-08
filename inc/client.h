@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:32 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:46:24 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 20:37:28 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,6 @@ t_bool			exec_cmd_lcd(char *const *args, char const **reason, t_env *e);
 t_bool			exec_cmd_ls(char *const *args, char const **reason, t_env *e);
 t_bool			exec_cmd_lls(char *const *args, char const **reason, t_env *e);
 t_bool			exec_cmd_get(char *const *args, char const **reason, t_env *e);
+t_bool			exec_cmd_put(char *const *args, char const **reason, t_env *e);
 
 #endif

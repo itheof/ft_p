@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:46:14 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 20:37:15 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ t_command g_commands[COMMANDS_LEN] = {
 		.desc = "upload file to server",
 		.args = NULL,
 		.nargs = 1,
+		.exec = exec_cmd_put
 	},
 	{
 		.name = "pwd",

@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:18 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:18:30 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 21:13:10 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,5 +60,6 @@ t_ecode			ping_op_handler(t_message *msg, t_env *env);
 t_ecode			cd_op_handler(t_message *msg, t_env *env);
 t_ecode			ls_op_handler(t_message *msg, t_env *env);
 t_ecode			get_op_handler(t_message *msg, t_env *env);
+t_ecode			put_op_handler(t_message *msg, t_env *env);
 
 #endif

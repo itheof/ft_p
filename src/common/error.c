@@ -22,6 +22,7 @@ static char const	*(g_err_desc[]) = {
 	[E_ERR_OPENDIR] = "opendir error",
 	[E_ERR_CHDIR] = "chdir error",
 	[E_ERR_GETCWD] = "getcwd error",
+	[E_ERR_FSTAT] = "fstat error",
 	[E_ERR_MALLOC] = "malloc error",
 	[E_ERR_OPEN] = "open error",
 };

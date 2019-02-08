@@ -8,7 +8,7 @@ static const char	g_not_basename_err[] = "get: file must be a single path "
 static const char	g_not_regular_err[] = "get: file is not a regular file";
 
 //TODO: enhance to -> is_same_dir
-t_bool	is_basename(char const *path)
+static t_bool	is_basename(char const *path)
 {
 	return (ft_strchr(path, '/') == NULL);
 }
@@ -23,8 +23,6 @@ static t_bool	is_regular_file_or_not_exist(char const *filename, t_env *e)
 	if (dirp == NULL)
 	{
 		e->log(e, "get: opendir() failed: %s", strerror(errno));
-		message_send(E_MESSAGE_ERR, strerror(errno), ft_strlen(strerror(errno)), e->csock);
-		// TODO ^ no error handling
 		return (false);
 	}
 	ret = true;
@@ -141,7 +139,6 @@ static char const	*ft_basename(char const *path)
 		return (path);
 }
 
-
 /*
  * asks the server to prepare file download and retrieve its size.
  */
@@ -177,7 +174,7 @@ static t_bool	get_file_size(char const *filename, off_t *sizep,
 	return (ret);
 }
 
-t_bool	exec_cmd_get(char * const *args, char const **reason, t_env *e)
+t_bool	exec_cmd_get(char *const *args, char const **reason, t_env *e)
 {
 	char const	*local_path;
 
@@ -189,7 +186,7 @@ t_bool	exec_cmd_get(char * const *args, char const **reason, t_env *e)
 	if ((ret = get_file_size(args[1], &size, reason, e)))
 		return (false);
 	local_path = ft_basename(args[1]);
-	if ((destfd = open(local_path, O_RDWR | O_CREAT, 0644)) < 0)
+	if ((destfd = open(local_path, O_RDWR | O_CREAT | O_EXCL, 0644)) < 0)
 	{
 		e->log(e, "get: open(): %s %s", args[1], strerror(errno));
 		*reason = error_get_string(E_ERR_OPEN);
@@ -200,6 +197,7 @@ t_bool	exec_cmd_get(char * const *args, char const **reason, t_env *e)
 		e->log(e, "get: ftruncate(): %s", strerror(errno));
 		close(destfd);
 		//TODO v: we need to read what the server writes to keep in sync
+		//APPEND AN OK MESSAGE HANDSHAKE TO SOLVE THIS
 		e->should_quit = true;
 		*reason = error_get_string(E_ERR_FTRUNC);
 		return(false);

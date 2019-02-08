@@ -39,7 +39,7 @@ static const t_op_handler	g_op_handlers[E_MESSAGE_MAX] = {
 	[E_MESSAGE_CD] = cd_op_handler,
 	[E_MESSAGE_LS] = ls_op_handler,
 	[E_MESSAGE_GET] = get_op_handler,
-/*	[E_MESSAGE_PUT] =,*/
+	[E_MESSAGE_PUT] = put_op_handler,
 	[E_MESSAGE_PWD] = pwd_op_handler,
 };
 

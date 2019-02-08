@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 14:16:56 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:44:41 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/08 20:47:08 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef enum	e_ecode
 	E_ERR_OPENDIR,
 	E_ERR_CHDIR,
 	E_ERR_GETCWD,
+	E_ERR_FSTAT,
 	E_ERR_MALLOC,
 	E_ERR_OPEN,
 	E_ERR_MAX,
