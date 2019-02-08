@@ -5,8 +5,11 @@ static t_bool	has_basepath(char const *basepath, char const *subpath)
 	size_t	n;
 
 	n = 0;
+	printf("%s\n", basepath);
 	while (basepath[n] != 0 && basepath[n] == subpath[n])
 		n++;
+	if (!ft_strcmp(basepath, "/"))
+		return (true);
 	if (basepath[n] == 0 && (subpath[n] == '/' || subpath[n] == 0))
 		return (true);
 	if (basepath[n] == '/' && subpath[n] == 0 && basepath[n + 1] == 0)

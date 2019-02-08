@@ -16,7 +16,10 @@ typedef enum	e_ecode
 	E_ERR_INVALID_OP,
 	E_ERR_READ,
 	E_ERR_WRITE,
+	E_ERR_MMAP,
+	E_ERR_FTRUNC,
 	E_ERR_MALLOC,
+	E_ERR_OPEN,
 	E_ERR_MAX,
 }				t_ecode;
 

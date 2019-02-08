@@ -1,4 +1,5 @@
 #include "message.h"
+#include "error.h"
 
 ssize_t		sock_raw_read(int fildes, void *buf, ssize_t nbyte)
 {
@@ -12,7 +13,7 @@ ssize_t		sock_raw_read(int fildes, void *buf, ssize_t nbyte)
 	return ((ret < 0) ? ret : count);
 }
 
-ssize_t		sock_raw_write(int fildes, void *buf, ssize_t nbyte)
+ssize_t		sock_raw_write(int fildes, void const *buf, ssize_t nbyte)
 {
 	ssize_t	ret;
 	ssize_t	count;

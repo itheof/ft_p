@@ -37,7 +37,7 @@ void		message_destroy(t_message *msg)
 	free(msg);
 }
 
-t_ecode		message_send(t_message_op op, void *data, size_t nbyte, int sock)
+t_ecode		message_send(t_message_op op, void const *data, size_t nbyte, int sock)
 {
 	t_message_hd	hd;
 	ssize_t			written;

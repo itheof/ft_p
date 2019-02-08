@@ -23,6 +23,7 @@ COM_SOURCES    = $(addprefix common/,\
 				 pwd.c\
 				 cd.c\
 				 ls.c\
+				 get.c\
 				 message.c\
 				 error.c\
 				 sock_raw.c)

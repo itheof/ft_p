@@ -17,7 +17,10 @@ static char const	*(g_err_desc[]) = {
 	[E_ERR_INVALID_OP] = "received invalid opcode",
 	[E_ERR_READ] = "read error",
 	[E_ERR_WRITE] = "write error",
+	[E_ERR_MMAP] = "mmap error",
+	[E_ERR_FTRUNC] = "ftruncate error",
 	[E_ERR_MALLOC] = "malloc error",
+	[E_ERR_OPEN] = "open error",
 };
 
 char const	*error_get_string(t_ecode e)

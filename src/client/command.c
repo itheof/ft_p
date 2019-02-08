@@ -74,6 +74,7 @@ t_command g_commands[COMMANDS_LEN] = {
 		.desc = "download file from server",
 		.args = NULL,
 		.nargs = 1,
+		.exec = exec_cmd_get,
 	},
 	{
 		.name = "put",

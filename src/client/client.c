@@ -70,6 +70,7 @@ int			loop(t_env *e)
 	ln = NULL;
 	while (!e->should_quit)
 	{
+		ft_strdel(&ln);
 		prompt();
 		if ((ret = get_next_line(STDIN_FILENO, &ln)) <= 0)
 			break; // TODO Call exit command
@@ -82,10 +83,9 @@ int			loop(t_env *e)
 			else
 				printf("\n\033[31mERROR\033[0m" ": %s: %s\n", args[0], reason);
 		}
-		free(ln);
 		ft_freetab((void**)args);
 	}
-	free(ln);
+	ft_strdel(&ln);
 	return (ret);
 }
 
