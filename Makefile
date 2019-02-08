@@ -1,5 +1,5 @@
 NAME         = server client
-CFLAGS      += -g -Wall -Wextra #-Werror
+CFLAGS      += -g -Wall -Wextra -Werror
 CFLAGS      += -std=c11 -pedantic -pedantic-errors
 
 ifeq ($(DEBUG),yes)

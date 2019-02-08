@@ -1,4 +1,5 @@
 #include "common.h"
+#include <limits.h>
 
 static t_bool	has_basepath(char const *basepath, char const *subpath)
 {
@@ -97,8 +98,8 @@ t_bool	exec_cmd_cd(char * const *args, char const **reason, t_env *e)
 		ret = true;
 	else if (msg->hd.op == E_MESSAGE_ERR)
 	{
-		if (msg->hd.size > 0)
-			e->log(e, "server: %.*s", msg->hd.size - 1, msg->payload);
+		if (msg->hd.size > 0 && msg->hd.size <= INT_MAX)
+			e->log(e, "server: %.*s", (int)msg->hd.size - 1, msg->payload);
 		*reason = error_get_string(E_ERR_SERVER);
 	}
 	else

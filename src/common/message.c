@@ -29,7 +29,7 @@ t_ecode		message_receive(t_message **dst, int sock)
 		free(*dst);
 		return (E_ERR_INCOMPLETE_PAYLOAD);
 	}
-	return (E_MESSAGE_OK);
+	return (E_ERR_OK);
 }
 
 void		message_destroy(t_message *msg)

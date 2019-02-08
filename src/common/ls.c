@@ -1,5 +1,6 @@
 #include "common.h"
 #include <dirent.h>
+#include <limits.h>
 
 t_ecode	ls_op_handler(t_message *msg, t_env *env)
 {
@@ -7,6 +8,7 @@ t_ecode	ls_op_handler(t_message *msg, t_env *env)
 	DIR				*dirp;
 	struct dirent	*dp;
 
+	(void)msg;
 	dirp = opendir(".");
 	if (dirp == NULL)
 	{
@@ -44,7 +46,7 @@ t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)
 	while (!(err = message_receive(&msg, e->csock))
 			&& msg->hd.op == E_MESSAGE_OK && msg->hd.size != 0)
 	{
-		printf("%.*s\n", msg->hd.size, msg->payload);
+		printf("%.*s\n", (unsigned)msg->hd.size, msg->payload);
 		message_destroy(msg);
 	}
 	if (err)
@@ -53,8 +55,8 @@ t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)
 		ret = true;
 	else if (msg->hd.op == E_MESSAGE_ERR)
 	{
-		if (msg->hd.size > 0)
-			e->log(e, "server: %.*s", msg->hd.size - 1, msg->payload);
+		if (msg->hd.size > 0 && msg->hd.size < INT_MAX)
+			e->log(e, "server: %.*s", (int)msg->hd.size - 1, msg->payload);
 		*reason = error_get_string(E_ERR_SERVER);
 		ret = false;
 	}

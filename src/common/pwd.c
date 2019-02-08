@@ -1,4 +1,5 @@
 #include "common.h"
+#include <limits.h>
 
 t_ecode	pwd_op_handler(t_message *msg, t_env *env)
 {
@@ -36,9 +37,9 @@ t_bool	exec_cmd_pwd(char * const *args, char const **reason, t_env *e)
 	ret = false;
 	if (msg->hd.op == E_MESSAGE_OK)
 	{
-		if (msg->hd.size > 0)
+		if (msg->hd.size > 0 && msg->hd.size <= INT_MAX)
 		{
-			e->log(e, "%.*s", msg->hd.size - 1, msg->payload);
+			e->log(e, "%.*s", (int)msg->hd.size - 1, msg->payload);
 			ret = true;
 		}
 		else
@@ -46,8 +47,8 @@ t_bool	exec_cmd_pwd(char * const *args, char const **reason, t_env *e)
 	}
 	else if (msg->hd.op == E_MESSAGE_ERR)
 	{
-		if (msg->hd.size > 0)
-			e->log(e, "server: %.*s", msg->hd.size - 1, msg->payload);
+		if (msg->hd.size > 0 && msg->hd.size <= INT_MAX)
+			e->log(e, "server: %.*s", (int)msg->hd.size - 1, msg->payload);
 		*reason = error_get_string(E_ERR_SERVER);
 	}
 	else

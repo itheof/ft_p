@@ -1,5 +1,6 @@
 #include "common.h"
 #include <dirent.h>
+#include <limits.h>
 
 static const char	g_not_basename_err[] = "get: file must be a single path "
 "component, relative to the current directory";
@@ -12,7 +13,7 @@ t_bool	is_basename(char const *path)
 	return (ft_strchr(path, '/') == NULL);
 }
 
-t_bool	is_regular_file_or_not_exist(char const *filename, t_env *e)
+static t_bool	is_regular_file_or_not_exist(char const *filename, t_env *e)
 {
 	DIR		*dirp;
 	struct dirent	*dp;
@@ -22,7 +23,9 @@ t_bool	is_regular_file_or_not_exist(char const *filename, t_env *e)
 	if (dirp == NULL)
 	{
 		e->log(e, "get: opendir() failed: %s", strerror(errno));
-		return (message_send(E_MESSAGE_ERR, strerror(errno), ft_strlen(strerror(errno)), e->csock));
+		message_send(E_MESSAGE_ERR, strerror(errno), ft_strlen(strerror(errno)), e->csock);
+		// TODO ^ no error handling
+		return (false);
 	}
 	ret = true;
 	while ((dp = readdir(dirp)) != NULL)
@@ -164,8 +167,8 @@ static t_bool	get_file_size(char const *filename, off_t *sizep,
 	}
 	else if (msg->hd.op == E_MESSAGE_ERR)
 	{
-		if (msg->hd.size > 0)
-			e->log(e, "server: %.*s", msg->hd.size - 1, msg->payload);
+		if (msg->hd.size > 0 && msg->hd.size < INT_MAX)
+			e->log(e, "server: %.*s", (int)msg->hd.size - 1, msg->payload);
 		*reason = error_get_string(E_ERR_SERVER);
 	}
 	else
@@ -176,7 +179,6 @@ static t_bool	get_file_size(char const *filename, off_t *sizep,
 
 t_bool	exec_cmd_get(char * const *args, char const **reason, t_env *e)
 {
-	t_ecode		err;
 	char const	*local_path;
 
 	off_t	size;
@@ -185,11 +187,7 @@ t_bool	exec_cmd_get(char * const *args, char const **reason, t_env *e)
 	void	*map;
 
 	if ((ret = get_file_size(args[1], &size, reason, e)))
-	{
-		close(destfd);
 		return (false);
-	}
-
 	local_path = ft_basename(args[1]);
 	if ((destfd = open(local_path, O_RDWR | O_CREAT, 0644)) < 0)
 	{
