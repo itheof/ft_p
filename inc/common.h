@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:16:04 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/09 16:52:29 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 # include <errno.h>
 # include <arpa/inet.h>
 # include <stdarg.h>
+# include <dirent.h>
+# include <limits.h>
 # include "libft.h"
 # include "error.h"
 # include "message.h"

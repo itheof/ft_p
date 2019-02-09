@@ -24,7 +24,6 @@ COM_SOURCES    = $(addprefix common/,\
 				 cd.c\
 				 ls.c\
 				 get.c\
-				 put.c\
 				 message.c\
 				 error.c\
 				 sock_raw.c)
@@ -32,12 +31,14 @@ COM_SOURCES    = $(addprefix common/,\
 CLIENT_SOURCES = $(addprefix client/,\
 				 client.c\
 				 help.c\
+				 put.c\
 				 command.c)
 
 SERVER_SOURCES = $(addprefix server/,\
 				 misc.c\
 				 master_init.c\
 				 worker.c\
+				 put.c\
 				 server.c)
 
 # Sources
