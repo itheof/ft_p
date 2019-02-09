@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 16:54:33 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/09 18:17:12 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,29 +96,6 @@ static t_ecode	get_file_size(off_t *dsize, t_env *e)
 	return (E_ERR_OK);
 }
 
-static t_ecode	prepare_transfer(char *path, off_t size, int *dfd, void **dmap)
-{
-	int	saved_errno;
-
-	if ((*dfd = open(path, O_RDWR | O_CREAT | O_EXCL, 0644)) < 0)
-		return (E_ERR_OPEN);
-	if (ftruncate(*dfd, size) != 0)
-	{
-		saved_errno = errno;
-		close(*dfd);
-		errno = saved_errno;
-		return (E_ERR_FTRUNC);
-	}
-	if ((*dmap = mmap(0, size, PROT_WRITE, MAP_SHARED, *dfd, 0)) == MAP_FAILED)
-	{
-		saved_errno = errno;
-		close(*dfd);
-		errno = saved_errno;
-		return (E_ERR_MMAP);
-	}
-	return (E_ERR_OK);
-}
-
 static t_ecode	server_transfer(void *map, off_t size, t_env *e)
 {
 	if (sock_raw_read(e->csock, map, size) < 0)
@@ -147,7 +124,7 @@ t_ecode	put_op_handler(t_message *msg, t_env *e)
 		return (err);
 	if ((err = get_file_size(&size, e)))
 		return (err);
-	if ((err = prepare_transfer(msg->payload, size, &fd, &map)))
+	if ((err = file_map_wr(msg->payload, size, &fd, &map)))
 	{
 		e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
 		if (message_send(E_MESSAGE_ERR, strerror(err),

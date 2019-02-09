@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 16:52:29 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/09 18:20:31 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,14 @@ int				ft_atoi_sane(char const *s, t_bool *sane);
 
 ssize_t			sock_raw_read(int fildes, void *buf, ssize_t nbyte);
 ssize_t			sock_raw_write(int fildes, void const *buf, ssize_t nbyte);
+
+/*
+** sets errno on error
+*/
+t_ecode			file_map_rd(
+		char const *path, int *dfd, off_t *dsize, void **dmap);
+t_ecode			file_map_wr(
+		char const *path, off_t size, int *dfd, void **dmap);
+void			file_unmap(int fd, off_t size, void *map);
 
 #endif

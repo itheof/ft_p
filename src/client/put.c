@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:14 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 16:55:02 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/09 17:59:24 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,44 +51,20 @@ static t_ecode	client_handshake(char const *filename, off_t size, t_env *e)
 	return (err);
 }
 
-static t_ecode	prepare_file(char *path, int *dfd, struct stat *dbuf,
-		void **dmap)
-{
-	int			saved_errno;
-
-	if ((*dfd = open(path, O_RDONLY)) < 0)
-		return (E_ERR_OPEN);
-	if (fstat(*dfd, dbuf) < 0)
-	{
-		saved_errno = errno;
-		close(*dfd);
-		errno = saved_errno;
-		return (E_ERR_FSTAT);
-	}
-	if ((*dmap = mmap(0, dbuf->st_size, PROT_READ, MAP_SHARED, *dfd, 0))
-			== MAP_FAILED)
-	{
-		saved_errno = errno;
-		close(*dfd);
-		errno = saved_errno;
-		return (E_ERR_MMAP);
-	}
-	return (E_ERR_OK);
-}
-
 t_bool			exec_cmd_put(char *const *args, char const **reason, t_env *e)
 {
 	int			fd;
-	struct stat	buf;
+	off_t		size;
 	void		*map;
 	t_ecode		err;
 
-	if (!(err = prepare_file(args[1], &fd, &buf, &map)))
+	if (!(err = file_map_rd(args[1], &fd, &size, &map)))
 	{
-		if (!(err = client_handshake(args[1], buf.st_size, e)))
-			err = client_transfer(map, buf.st_size, e);
-		munmap(map, buf.st_size);
-		close(fd);
+		if (!(err = client_handshake(args[1], size, e)))
+			err = client_transfer(map, size, e);
+		else
+			e->log(e, "put: could not handshake");
+		file_unmap(fd, size, map);
 	}
 	else
 		e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
