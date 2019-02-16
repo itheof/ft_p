@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   message.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/02/16 16:16:04 by tvallee           #+#    #+#             */
+/*   Updated: 2019/02/16 16:16:12 by tvallee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "common.h"
 
 /*
@@ -37,7 +49,8 @@ void		message_destroy(t_message *msg)
 	free(msg);
 }
 
-t_ecode		message_send(t_message_op op, void const *data, size_t nbyte, int sock)
+t_ecode		message_send(t_message_op op,
+		void const *data, size_t nbyte, int sock)
 {
 	t_message_hd	hd;
 	ssize_t			written;

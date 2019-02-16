@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:25:55 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 16:07:58 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 16:15:40 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 t_ecode	message_send_unknown_err(int sock, int errnum)
 {
-	size_t		len;
-	char 		*err;
+	size_t	len;
+	char	*err;
 
 	err = strerror(errnum);
 	len = ft_strlen(err);
@@ -30,7 +30,7 @@ int		ft_atoi_sane(char const *s, t_bool *sane)
 	i = ft_atoi(s);
 	*sane = false;
 	tmp = ft_itoa(i);
-	if (tmp != NULL&& !ft_strcmp(tmp, s))
+	if (tmp != NULL && !ft_strcmp(tmp, s))
 		*sane = true;
 	free(tmp);
 	return (i);

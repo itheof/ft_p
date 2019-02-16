@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2018/12/17 15:57:55 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 16:17:10 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_ecode	ping_op_handler(t_message *msg, t_env *env)
 	return (E_ERR_OK);
 }
 
-t_bool	exec_cmd_ping(char * const *args, char const **reason, t_env *e)
+t_bool	exec_cmd_ping(char *const *args, char const **reason, t_env *e)
 {
 	t_message	*msg;
 	t_ecode		err;
@@ -32,13 +32,13 @@ t_bool	exec_cmd_ping(char * const *args, char const **reason, t_env *e)
 	{
 		*reason = error_get_string(err);
 		e->should_quit = true;
-		return false;
+		return (false);
 	}
 	if ((err = message_receive(&msg, e->csock)))
 	{
 		*reason = error_get_string(err);
 		e->should_quit = true;
-		return false;
+		return (false);
 	}
 	ret = msg->hd.op == E_MESSAGE_OK;
 	message_destroy(msg);

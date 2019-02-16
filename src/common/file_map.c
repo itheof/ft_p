@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 17:51:21 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 18:20:43 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 16:16:37 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ t_ecode	file_map_wr(char const *path, off_t size, int *dfd, void **dmap)
 		saved_errno = errno;
 		close(*dfd);
 		errno = saved_errno;
-		return(E_ERR_FTRUNC);
+		return (E_ERR_FTRUNC);
 	}
 	if ((*dmap = mmap(0, size, PROT_WRITE, MAP_SHARED, *dfd, 0)) == MAP_FAILED)
 	{
