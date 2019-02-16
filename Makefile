@@ -33,6 +33,7 @@ CLIENT_SOURCES = $(addprefix client/,\
 				 help.c\
 				 get.c\
 				 put.c\
+				 lcd.c\
 				 command.c)
 
 SERVER_SOURCES = $(addprefix server/,\

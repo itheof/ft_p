@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ls.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/02/16 16:59:55 by tvallee           #+#    #+#             */
+/*   Updated: 2019/02/16 17:16:36 by tvallee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "common.h"
 #include <dirent.h>
 #include <limits.h>
@@ -13,13 +25,15 @@ t_ecode	ls_op_handler(t_message *msg, t_env *env)
 	if (dirp == NULL)
 	{
 		env->log(env, "ls: opendir() failed: %s", strerror(errno));
-		return (message_send(E_MESSAGE_ERR, strerror(errno), ft_strlen(strerror(errno)), env->csock));
+		return (message_send(E_MESSAGE_ERR,
+					strerror(errno), ft_strlen(strerror(errno)), env->csock));
 	}
 	while ((dp = readdir(dirp)) != NULL)
 	{
 		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
 			continue ;
-		if ((err = message_send(E_MESSAGE_OK, dp->d_name, ft_strlen(dp->d_name), env->csock)))
+		if ((err = message_send(E_MESSAGE_OK,
+						dp->d_name, ft_strlen(dp->d_name), env->csock)))
 		{
 			closedir(dirp);
 			env->should_quit = true;
@@ -30,7 +44,7 @@ t_ecode	ls_op_handler(t_message *msg, t_env *env)
 	return (message_send(E_MESSAGE_OK, NULL, 0, env->csock));
 }
 
-t_bool	exec_cmd_lls(char * const *args, char const **reason, t_env *e)
+t_bool	exec_cmd_lls(char *const *args, char const **reason, t_env *e)
 {
 	DIR				*dirp;
 	struct dirent	*dp;
@@ -53,7 +67,25 @@ t_bool	exec_cmd_lls(char * const *args, char const **reason, t_env *e)
 	return (true);
 }
 
-t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)
+t_bool	exec_handle_last_response(t_message *msg, char const **reason, t_env *e)
+{
+	if (msg->hd.op == E_MESSAGE_OK)
+		return (true);
+	else if (msg->hd.op == E_MESSAGE_ERR)
+	{
+		if (msg->hd.size > 0 && msg->hd.size < INT_MAX)
+			e->log(e, "server: %.*s", (int)msg->hd.size - 1, msg->payload);
+		*reason = error_get_string(E_ERR_SERVER);
+		return (false);
+	}
+	else
+	{
+		*reason = error_get_string(E_ERR_UNEXPECTED_OP);
+		return (false);
+	}
+}
+
+t_bool	exec_cmd_ls(char *const *args, char const **reason, t_env *e)
 {
 	t_message	*msg;
 	t_ecode		err;
@@ -78,21 +110,7 @@ t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)
 		e->should_quit = true;
 		return (false);
 	}
-	if (msg->hd.op == E_MESSAGE_OK)
-		ret = true;
-	else if (msg->hd.op == E_MESSAGE_ERR)
-	{
-		if (msg->hd.size > 0 && msg->hd.size < INT_MAX)
-			e->log(e, "server: %.*s", (int)msg->hd.size - 1, msg->payload);
-		*reason = error_get_string(E_ERR_SERVER);
-		ret = false;
-	}
-	else
-	{
-		*reason = error_get_string(E_ERR_UNEXPECTED_OP);
-		ret = false;
-	}
+	ret = exec_handle_last_response(msg, reason, e);
 	message_destroy(msg);
 	return (ret);
-
 }
