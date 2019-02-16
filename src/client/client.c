@@ -6,17 +6,11 @@
 /*   By: tvallee <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/02 15:40:34 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 14:37:42 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 15:15:54 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
-
-static void usage(char *str)
-{
-	printf("Usage: %s <addr> <port>\n", str);
-	exit(-1);
-}
 
 static int	err(char const *msg)
 {
@@ -26,10 +20,10 @@ static int	err(char const *msg)
 
 static int	create_client(char const *addr, int port)
 {
-	int		sock;
-	struct protoent	*proto;
+	struct protoent		*proto;
+	struct hostent		*host;
 	struct sockaddr_in	sin;
-	struct hostent	*host;
+	int					sock;
 
 	proto = getprotobyname("tcp");
 	host = gethostbyname(addr);
@@ -52,30 +46,25 @@ static int	create_client(char const *addr, int port)
 	return (sock);
 }
 
-static void	prompt(void)
-{
-	char const	s[] = "ftp $> "; //TODO: nice prompt with remote addr
-
-	write(STDOUT_FILENO, s, sizeof(s) - 1);
-}
-
-int			loop(t_env *e)
+void		loop(t_env *e)
 {
 	char			*ln;
 	char			**args;
-	int				ret;
 	char const		*reason;
-	
+
 	e->should_quit = false;
 	ln = NULL;
 	while (!e->should_quit)
 	{
 		ft_strdel(&ln);
-		prompt();
-		if ((ret = get_next_line(STDIN_FILENO, &ln)) <= 0)
-			break; // TODO Call exit command
+		write(STDOUT_FILENO, "ftp $> ", sizeof("ftp $> ") - 1);
+		if ((e->ret = get_next_line(STDIN_FILENO, &ln)) <= 0)
+			break ;
 		if ((args = ft_strsplit_fromtab(ln, " \f\n\r\t\v")) == NULL)
-			return (err("malloc"));
+		{
+			e->ret = err("malloc");
+			break ;
+		}
 		if (args[0] != NULL)
 		{
 			if (command_exec(args, &reason, e))
@@ -86,7 +75,6 @@ int			loop(t_env *e)
 		ft_freetab((void**)args);
 	}
 	ft_strdel(&ln);
-	return (ret);
 }
 
 int			print(t_env const *e, const char *format, ...)
@@ -106,7 +94,6 @@ int			main(int ac, char **av)
 {
 	t_bool	sane;
 	int		port;
-	int		ret;
 	t_env	e;
 
 	e.log = print;
@@ -116,7 +103,7 @@ int			main(int ac, char **av)
 		sane = false;
 	if (!sane)
 	{
-		usage(av[0]);
+		printf("Usage: %s <addr> <port>\n", av[0]);
 		return (1);
 	}
 	if (!(e.cwd_path = getcwd(NULL, 0)))
@@ -126,7 +113,7 @@ int			main(int ac, char **av)
 	}
 	if ((e.csock = create_client(av[1], port)) < 0)
 		return (1);
-	ret = loop(&e);
+	loop(&e);
 	close(e.csock);
-	return (ret);
+	return (e.ret);
 }

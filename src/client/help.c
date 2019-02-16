@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2018/12/17 15:57:55 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 13:05:59 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 extern t_command g_commands[COMMANDS_LEN];
 
-t_bool	exec_cmd_help(char * const *args, char const **reason, t_env *e)
+t_bool	exec_cmd_help(char *const *args, char const **reason, t_env *e)
 {
 	size_t	n;
 
-	(void)args;//TODO: Use arg1 to only display help for this command
+	(void)args;
 	(void)e;
 	(void)reason;
 	n = 0;

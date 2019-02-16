@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 18:20:31 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 14:59:47 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef struct	s_env
 	int		(*log)(struct s_env const *env, char const *format, ...) __attribute__((format(printf,2,3)));
 	char	*root_path;
 	char	*cwd_path;
+	int		ret;
 }				t_env;
 
 t_bool			command_abort(t_ecode err, char const **reason,

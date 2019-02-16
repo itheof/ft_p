@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 17:05:32 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 18:20:13 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 15:16:39 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ t_bool	exec_cmd_get(char *const *args, char const **reason, t_env *e)
 		*reason = error_get_string(err);
 		return (false);
 	}
-
 	if (sock_raw_read(e->csock, map, size) < 0)
 	{
 		e->log(e, "get: read(): %s", strerror(errno));
@@ -86,7 +85,6 @@ t_bool	exec_cmd_get(char *const *args, char const **reason, t_env *e)
 		*reason = error_get_string(E_ERR_READ);
 		return (false);
 	}
-
 	file_unmap(fd, size, map);
 	return (true);
 }

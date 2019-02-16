@@ -6,19 +6,14 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 20:37:15 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 15:02:01 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-static t_bool	exec_not_impl(char const **reason)
-{
-	*reason = "exec function not implemented yet";
-	return (false);
-}
-
-static t_bool	exec_cmd_quit(char * const *args, char const **reason, t_env *e)
+static t_bool			exec_cmd_quit(char *const *args, char const **reason,
+		t_env *e)
 {
 	(void)args;
 	(void)reason;
@@ -26,7 +21,7 @@ static t_bool	exec_cmd_quit(char * const *args, char const **reason, t_env *e)
 	return (true);
 }
 
-t_command g_commands[COMMANDS_LEN] = {
+t_command				g_commands[COMMANDS_LEN] = {
 	{
 		.name = "ping",
 		.desc = "request a pong from remote",
@@ -38,7 +33,7 @@ t_command g_commands[COMMANDS_LEN] = {
 		.name = "help",
 		.desc = "show help message for available commands",
 		.args = NULL,
-		.nargs = 0, //TODO: Variadic arguments
+		.nargs = 0,
 		.exec = exec_cmd_help
 	},
 	{
@@ -113,6 +108,12 @@ t_command g_commands[COMMANDS_LEN] = {
 	}
 };
 
+static t_bool			exec_not_impl(char const **reason)
+{
+	*reason = "exec function not implemented yet";
+	return (false);
+}
+
 static t_command const	*command_match(char const *name)
 {
 	size_t	i;
@@ -127,10 +128,12 @@ static t_command const	*command_match(char const *name)
 	return (NULL);
 }
 
-t_bool	command_exec(char * const *args, char const **reason, t_env *e)
+t_bool					command_exec(char *const *args, char const **reason,
+		t_env *e)
 {
 	t_command const	*match;
 
+	e->ret = 1;
 	*reason = "programming error: *reason should be set in case of error";
 	if (!(match = command_match(args[0])))
 	{
@@ -143,6 +146,12 @@ t_bool	command_exec(char * const *args, char const **reason, t_env *e)
 		return (false);
 	}
 	if (!match->exec)
-		return(exec_not_impl(reason));
-	return(match->exec(args, reason, e));
+		return (exec_not_impl(reason));
+	if (match->exec(args, reason, e))
+	{
+		e->ret = 0;
+		return (true);
+	}
+	else
+		return (false);
 }

@@ -6,13 +6,13 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:14 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 17:59:24 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 13:07:03 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-static t_ecode client_transfer(void const *map, off_t size, t_env *e)
+static t_ecode	client_transfer(void const *map, off_t size, t_env *e)
 {
 	if (sock_raw_write(e->csock, map, size) < 0)
 	{
