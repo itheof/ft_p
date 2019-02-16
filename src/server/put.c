@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 18:17:12 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 15:44:06 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,9 +120,9 @@ t_ecode	put_op_handler(t_message *msg, t_env *e)
 		return (E_ERR_INVALID_PAYLOAD);
 	}
 	msg->payload[msg->hd.size - 1] = '\0';
-	if ((err = sanitize_filename(msg->payload, e)))
-		return (err);
 	if ((err = get_file_size(&size, e)))
+		return (err);
+	if ((err = sanitize_filename(msg->payload, e)))
 		return (err);
 	if ((err = file_map_wr(msg->payload, size, &fd, &map)))
 	{
