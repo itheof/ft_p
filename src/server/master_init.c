@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   master_init.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/02/16 17:51:14 by tvallee           #+#    #+#             */
+/*   Updated: 2019/02/16 18:15:10 by tvallee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "server.h"
 
-static int	log_with_pid(t_env const *env, char const *format, ...)
+static int		log_with_pid(t_env const *env, char const *format, ...)
 {
 	va_list args;
 	int		ret;
@@ -15,62 +27,42 @@ static int	log_with_pid(t_env const *env, char const *format, ...)
 	return (ret);
 }
 
-static int	get_socket(int port) // TODO error handling return -1
+static int		get_socket(int port)
 {
-	int	sock;
-	struct protoent	*proto;
+	int					sock;
+	struct protoent		*proto;
 	struct sockaddr_in	sin;
 
 	proto = getprotobyname("tcp");
 	if (proto == 0)
 		return (-1);
-	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
+	if ((sock = socket(PF_INET, SOCK_STREAM, proto->p_proto)) < 0)
+	{
+		perror("socket");
+		return (-1);
+	}
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);
 	if (bind(sock, (const struct sockaddr *)&sin, sizeof(sin)) == -1)
-	{
 		perror("bind");
-		exit(2);
-	}
-	listen(sock, 42);
-	return (sock);
+	else if (listen(sock, 42) == -1)
+		perror("listen");
+	else
+		return (sock);
+	close(sock);
+	return (-1);
 }
 
-static t_bool	parse_cl_fail(t_master_env *menv, char const *name)
-{
-	menv->env.log(&menv->env, "Usage: %s [-d chbasedir] PORT\n", name);
-	return (false);
-}
-
-static t_bool	parse_cl(t_master_env *menv, int ac, char const *av[])
-{
-	t_bool	sane;
-	t_opt	state;
-	int		opt;
-
-	ft_memset(&state, 0, sizeof(state));
-	while ((opt = ft_getopt(ac, av, "d:", &state)) != -1)
-	{
-		if (opt == '?')
-			return (parse_cl_fail(menv, av[0]));
-		else if (opt == 'd')
-			menv->base_dir = state.optarg;
-	}
-	if (ac - state.optind != 1)
-		return (parse_cl_fail(menv, av[0]));
-	menv->port = ft_atoi_sane(av[state.optind], &sane);
-	if (!sane)
-		return (parse_cl_fail(menv, av[0]));
-	return (true);
-}
+/*
+** TODO: this sets PWD to the realpath of the basedir when it should instead
+** try to sanitize the logical path that PWD can represent
+*/
 
 static t_bool	setup_basedir(t_master_env *menv)
 {
 	char	*path;
 
-	//TODO: this sets PWD to the realpath of the basedir when it should instead
-	// try to sanitize the logical path that PWD can represent
 	if (menv->base_dir)
 	{
 		if (chdir(menv->base_dir) != 0)
@@ -98,7 +90,12 @@ static t_bool	setup_basedir(t_master_env *menv)
 	return (true);
 }
 
-int	master_init(t_master_env *menv, int ac, char const *av[])
+/*
+** v allow killing the master process and its children through the same PG
+** an interactive shell already setpgrp's before exec'ing. enforce this
+*/
+
+int				master_init(t_master_env *menv, int ac, char const *av[])
 {
 	menv->env.pid = 0;
 	menv->env.log = log_with_pid;
@@ -112,9 +109,6 @@ int	master_init(t_master_env *menv, int ac, char const *av[])
 	if (!set_signal_handler())
 		return (false);
 	menv->env.log(&menv->env, "listening on port %d\n", menv->port);
-	
-	// allow killing the master process and its children through the same PG
-	// an interactive shell already setpgrp's before exec'ing. enforce this
 	setpgrp();
 	return (true);
 }

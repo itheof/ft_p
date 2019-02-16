@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   worker.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/02/16 17:47:35 by tvallee           #+#    #+#             */
+/*   Updated: 2019/02/16 17:50:08 by tvallee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "server.h"
 
 /*
@@ -5,12 +17,13 @@
 ** a custom handler is set for sig
 */
 
-t_ecode	default_op_handler(t_message *msg, t_env *env)
+t_ecode		default_op_handler(t_message *msg, t_env *env)
 {
 	(void)msg;
 	env->should_quit = true;
 	return (E_ERR_UNIMPLEMENTED_OP);
 }
+
 static int	log_with_pid(t_env const *env, char const *format, ...)
 {
 	va_list args;
@@ -26,7 +39,6 @@ static int	log_with_pid(t_env const *env, char const *format, ...)
 		i++;
 	}
 	assert(LOG_PADDING >= i);
-
 	ret = printf("worker(%d)%*c: ", env->pid, LOG_PADDING - i, ' ');
 	va_start(args, format);
 	ret += vprintf(format, args);
@@ -34,6 +46,7 @@ static int	log_with_pid(t_env const *env, char const *format, ...)
 	va_end(args);
 	return (ret);
 }
+
 static const t_op_handler	g_op_handlers[E_MESSAGE_MAX] = {
 	[E_MESSAGE_PING] = ping_op_handler,
 	[E_MESSAGE_CD] = cd_op_handler,
@@ -54,7 +67,7 @@ static void	worker_init(t_env *env, int cs)
 	env->csock = cs;
 }
 
-void	connection_worker(int cs)
+void		connection_worker(int cs)
 {
 	t_op_handler	handler;
 	t_message		*msg;

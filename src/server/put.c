@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 15:44:06 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 18:20:31 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,10 @@ static const char	g_not_basename_err[] = "put: file must be a single path "
 
 static const char	g_exists_err[] = "put: file exists";
 
-//TODO: enhance to -> is_same_dir
+/*
+** TODO: enhance to -> is_same_dir
+*/
+
 static t_bool	is_basename(char const *path)
 {
 	if (!ft_strcmp(".", path))
@@ -45,7 +48,7 @@ static t_bool	file_exists(char const *filename, t_env *e)
 		if (!strcmp(dp->d_name, filename))
 		{
 			ret = false;
-			break;
+			break ;
 		}
 	}
 	closedir(dirp);
@@ -107,9 +110,9 @@ static t_ecode	server_transfer(void *map, off_t size, t_env *e)
 	return (E_ERR_OK);
 }
 
-t_ecode	put_op_handler(t_message *msg, t_env *e)
+t_ecode			put_op_handler(t_message *msg, t_env *e)
 {
-	int 	fd;
+	int		fd;
 	off_t	size;
 	void	*map;
 	t_ecode	err;

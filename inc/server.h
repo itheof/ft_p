@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:18 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 21:13:10 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 18:11:42 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ typedef struct	s_master_env
 void			connection_worker(int cs);
 
 /*
-** misc.c
+** parse_cl.c
 */
 
-void			print_header(pid_t pid);
+t_bool			parse_cl(t_master_env *menv, int ac, char const *av[]);
 
 /*
 ** master_init.c
@@ -46,10 +46,11 @@ void			print_header(pid_t pid);
 int				master_init(t_master_env *menv, int ac, char const *av[]);
 
 /*
-** server.c
+** signal.c
 */
 
 t_bool			set_signal_handler(void);
+void			reap_children(t_env const *env);
 
 /*
 ** ../common
