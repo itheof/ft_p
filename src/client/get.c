@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 17:05:32 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 15:16:39 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 16:13:19 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,17 @@ static t_bool	get_file_size(char const *filename, off_t *sizep,
 
 	if ((err = message_send(E_MESSAGE_GET,
 					filename, ft_strlen(filename) + 1, e->csock)))
-		return (command_abort(err, reason, &e->should_quit));
+	{
+		*reason = error_get_string(err);
+		e->should_quit = true;
+		return (false);
+	}
 	if ((err = message_receive(&msg, e->csock)))
-		return (command_abort(err, reason, &e->should_quit));
+	{
+		*reason =error_get_string(err);
+		e->should_quit = true;
+		return (false);
+	}
 	ret = true;
 	// not required. Makes sure struct stat.st_size is off_t
 	assert(sizeof(*sizep) == sizeof(((struct stat *)NULL)->st_size));

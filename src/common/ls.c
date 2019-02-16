@@ -61,7 +61,11 @@ t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)
 
 	(void)args;
 	if ((err = message_send(E_MESSAGE_LS, NULL, 0, e->csock)))
-		return (command_abort(err, reason, &e->should_quit));
+	{
+		*reason = error_get_string(err);
+		e->should_quit = true;
+		return (false);
+	}
 	while (!(err = message_receive(&msg, e->csock))
 			&& msg->hd.op == E_MESSAGE_OK && msg->hd.size != 0)
 	{
@@ -69,7 +73,11 @@ t_bool	exec_cmd_ls(char * const *args, char const **reason, t_env *e)
 		message_destroy(msg);
 	}
 	if (err)
-		return (command_abort(err, reason, &e->should_quit));
+	{
+		*reason = error_get_string(err);
+		e->should_quit = true;
+		return (false);
+	}
 	if (msg->hd.op == E_MESSAGE_OK)
 		ret = true;
 	else if (msg->hd.op == E_MESSAGE_ERR)

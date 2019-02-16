@@ -110,9 +110,17 @@ t_bool	exec_cmd_cd(char * const *args, char const **reason, t_env *e)
 
 	(void)args;
 	if ((err = message_send(E_MESSAGE_CD, args[1], ft_strlen(args[1]) + 1, e->csock)))
-		return (command_abort(err, reason, &e->should_quit));
+	{
+		*reason = error_get_string(err);
+		e->should_quit = true;
+		return (false);
+	}
 	if ((err = message_receive(&msg, e->csock)))
-		return (command_abort(err, reason, &e->should_quit));
+	{
+		*reason = error_get_string(err);
+		e->should_quit = true;
+		return (false);
+	}
 	ret = false;
 	if (msg->hd.op == E_MESSAGE_OK)
 		ret = true;

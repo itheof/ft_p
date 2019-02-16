@@ -6,18 +6,11 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:25:55 by tvallee           #+#    #+#             */
-/*   Updated: 2018/12/17 14:26:01 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 16:07:58 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "common.h"
-
-t_bool	command_abort(t_ecode err, char const **reason, t_bool *should_quit)
-{
-	*should_quit = true;
-	*reason = error_get_string(err);
-	return (false);
-}
 
 t_ecode	message_send_unknown_err(int sock, int errnum)
 {

@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 14:59:47 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/16 16:08:16 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,6 @@ typedef struct	s_env
 	char	*cwd_path;
 	int		ret;
 }				t_env;
-
-t_bool			command_abort(t_ecode err, char const **reason,
-		t_bool *should_quit);
 
 int				ft_atoi_sane(char const *s, t_bool *sane);
 
