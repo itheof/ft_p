@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 18:20:31 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 17:38:20 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,9 +112,7 @@ static t_ecode	server_transfer(void *map, off_t size, t_env *e)
 
 t_ecode			put_op_handler(t_message *msg, t_env *e)
 {
-	int		fd;
-	off_t	size;
-	void	*map;
+	t_map	map;
 	t_ecode	err;
 
 	if (!msg->hd.size)
@@ -123,11 +121,11 @@ t_ecode			put_op_handler(t_message *msg, t_env *e)
 		return (E_ERR_INVALID_PAYLOAD);
 	}
 	msg->payload[msg->hd.size - 1] = '\0';
-	if ((err = get_file_size(&size, e)))
+	if ((err = get_file_size(&map.size, e)))
 		return (err);
 	if ((err = sanitize_filename(msg->payload, e)))
 		return (err);
-	if ((err = file_map_wr(msg->payload, size, &fd, &map)))
+	if ((err = file_map_wr(msg->payload, map.size, &map)))
 	{
 		e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
 		if (message_send(E_MESSAGE_ERR, strerror(err),
@@ -142,8 +140,7 @@ t_ecode			put_op_handler(t_message *msg, t_env *e)
 	if ((err = message_send(E_MESSAGE_OK, NULL, 0, e->csock)))
 		e->should_quit = true;
 	else
-		err = server_transfer(map, size, e);
-	munmap(map, size);
-	close(fd);
+		err = server_transfer(map.data, map.size, e);
+	file_unmap(&map);
 	return (err == E_ERR_OK);
 }

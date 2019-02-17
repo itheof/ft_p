@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 17:05:36 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/09 18:12:28 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 17:32:42 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,9 @@ static t_ecode	sanitize_filename(char const *filename, t_env *e)
  */
 t_ecode	get_op_handler(t_message *msg, t_env *env)
 {
-	off_t	size;
-	void	*map;
-	int		fd;
+	t_map	map;
 	t_ecode	err;
+	t_message	*begin;
 
 	if (!msg->hd.size)
 	{
@@ -87,27 +86,43 @@ t_ecode	get_op_handler(t_message *msg, t_env *env)
 	if ((err = sanitize_filename(msg->payload, env)))
 		return (err);
 
-	if ((err = file_map_rd(msg->payload, &fd, &size, &map)))
+	if ((err = file_map_rd(msg->payload, &map)))
 	{
 		env->log(env, "get %s: %s - %s",
 				msg->payload, error_get_string(err), strerror(errno));
 		return (message_send(E_MESSAGE_ERR,
 					strerror(errno), ft_strlen(strerror(errno)), env->csock));
 	}
-	if ((err = message_send(E_MESSAGE_OK, &size, sizeof(size), env->csock)))
+	if ((err = message_send(E_MESSAGE_OK, &map.size, sizeof(map.size), env->csock)))
 	{
-		close(fd);
+		file_unmap(&map);
 		env->should_quit = true;
-		return (E_ERR_WRITE);
+		return (err);
 	}
-	if (sock_raw_write(env->csock, map, size) < 0)
+	if ((err = message_receive(&begin, env->csock)))
 	{
-		//critical
-		file_unmap(fd, size, map);
+		file_unmap(&map);
 		env->should_quit = true;
-		return (E_ERR_WRITE);
+		return (err);
 	}
+	if (begin->hd.op == E_MESSAGE_OK)
+	{
+		if (sock_raw_write(env->csock, map.data, map.size) < 0)
+		{
+			//critical
+			file_unmap(&map);
+			env->should_quit = true;
+			message_destroy(begin);
+			return (E_ERR_WRITE);
+		}
+		err = E_ERR_OK;
+	}
+	else if (begin->hd.op == E_MESSAGE_ERR)
+		env->log(env, "client encountered an error, giving up on transfer\n");
+	else
+		err = E_ERR_UNEXPECTED_OP;
 
-	file_unmap(fd, size, map);
-	return (E_ERR_OK);
+	message_destroy(begin);
+	file_unmap(&map);
+	return (err);
 }

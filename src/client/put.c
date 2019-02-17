@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:14 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 13:07:03 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 17:39:10 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,16 @@ static t_ecode	client_handshake(char const *filename, off_t size, t_env *e)
 
 t_bool			exec_cmd_put(char *const *args, char const **reason, t_env *e)
 {
-	int			fd;
-	off_t		size;
-	void		*map;
-	t_ecode		err;
+	t_map	map;
+	t_ecode	err;
 
-	if (!(err = file_map_rd(args[1], &fd, &size, &map)))
+	if (!(err = file_map_rd(args[1], &map)))
 	{
-		if (!(err = client_handshake(args[1], size, e)))
-			err = client_transfer(map, size, e);
+		if (!(err = client_handshake(args[1], map.size, e)))
+			err = client_transfer(map.data, map.size, e);
 		else
 			e->log(e, "put: could not handshake");
-		file_unmap(fd, size, map);
+		file_unmap(&map);
 	}
 	else
 		e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
