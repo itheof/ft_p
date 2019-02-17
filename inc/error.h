@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 14:16:56 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/08 20:47:08 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 19:06:46 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ typedef enum	e_ecode
 	E_ERR_OK = false,
 	E_ERR_CLOSED,
 	E_ERR_SERVER,
+	E_ERR_CLIENT,
 	E_ERR_INCOMPLETE_HEADER,
 	E_ERR_INCOMPLETE_PAYLOAD,
 	E_ERR_INVALID_PAYLOAD,

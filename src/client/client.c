@@ -6,51 +6,26 @@
 /*   By: tvallee <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/02 15:40:34 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 15:15:54 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:16:44 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-static int	err(char const *msg)
+static void	wrap_command_exec(char **args, t_env *e)
 {
-	printf("%s: %s\n", msg, strerror(errno));
-	return (-1);
+	char const		*reason;
+
+	if (command_exec(args, &reason, e))
+		printf("\n\033[92mSUCCESS\033[0m\n");
+	else
+		printf("\n\033[31mERROR\033[0m" ": %s: %s\n", args[0], reason);
 }
 
-static int	create_client(char const *addr, int port)
-{
-	struct protoent		*proto;
-	struct hostent		*host;
-	struct sockaddr_in	sin;
-	int					sock;
-
-	proto = getprotobyname("tcp");
-	host = gethostbyname(addr);
-	if (proto == 0 || !host)
-		return (err("error"));
-	assert(host->h_length == 4);
-	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
-	if (sock < 0)
-		return (err("socket"));
-	else if (sock <= STDERR_FILENO)
-	{
-		printf("socket returned a standard FILENO. exiting to prevent hang\n");
-		return (-1);
-	}
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = *(uint32_t *)host->h_addr;
-	if (connect(sock, (const struct sockaddr *)&sin, sizeof(sin)) == -1)
-		return (err("connect"));
-	return (sock);
-}
-
-void		loop(t_env *e)
+static void	loop(t_env *e)
 {
 	char			*ln;
 	char			**args;
-	char const		*reason;
 
 	e->should_quit = false;
 	ln = NULL;
@@ -62,22 +37,18 @@ void		loop(t_env *e)
 			break ;
 		if ((args = ft_strsplit_fromtab(ln, " \f\n\r\t\v")) == NULL)
 		{
-			e->ret = err("malloc");
+			printf("malloc: %s\n", strerror(errno));
+			e->ret = -1;
 			break ;
 		}
 		if (args[0] != NULL)
-		{
-			if (command_exec(args, &reason, e))
-				printf("\n\033[92mSUCCESS\033[0m\n");
-			else
-				printf("\n\033[31mERROR\033[0m" ": %s: %s\n", args[0], reason);
-		}
+			wrap_command_exec(args, e);
 		ft_freetab((void**)args);
 	}
 	ft_strdel(&ln);
 }
 
-int			print(t_env const *e, const char *format, ...)
+static int	print(t_env const *e, const char *format, ...)
 {
 	va_list args;
 	int		ret;

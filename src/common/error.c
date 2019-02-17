@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/16 16:15:47 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 16:15:49 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 19:07:11 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ static char const	*(g_err_desc[]) = {
 	[E_ERR_OK] = "success",
 	[E_ERR_CLOSED] = "connection closed by peer",
 	[E_ERR_SERVER] = "server error",
+	[E_ERR_CLIENT] = "client error",
 	[E_ERR_INCOMPLETE_HEADER] = "received partial ft_p header",
 	[E_ERR_INCOMPLETE_PAYLOAD] = "received partial ft_p payload",
 	[E_ERR_INVALID_PAYLOAD] = "received invalid payload",

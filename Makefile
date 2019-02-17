@@ -30,6 +30,7 @@ COM_SOURCES    = $(addprefix common/,\
 
 CLIENT_SOURCES = $(addprefix client/,\
 				 client.c\
+				 create_client.c\
 				 help.c\
 				 get.c\
 				 put.c\

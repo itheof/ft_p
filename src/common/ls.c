@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/16 16:59:55 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 17:16:36 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:32:59 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ t_ecode	ls_op_handler(t_message *msg, t_env *env)
 	struct dirent	*dp;
 
 	(void)msg;
-	dirp = opendir(".");
-	if (dirp == NULL)
+	if ((dirp = opendir(".")) == NULL)
 	{
 		env->log(env, "ls: opendir() failed: %s", strerror(errno));
 		return (message_send(E_MESSAGE_ERR,
@@ -107,8 +106,7 @@ t_bool	exec_cmd_ls(char *const *args, char const **reason, t_env *e)
 	if (err)
 	{
 		*reason = error_get_string(err);
-		e->should_quit = true;
-		return (false);
+		return (!(e->should_quit = true));
 	}
 	ret = exec_handle_last_response(msg, reason, e);
 	message_destroy(msg);

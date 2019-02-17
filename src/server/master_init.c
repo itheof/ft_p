@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/16 17:51:14 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 18:15:10 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:41:26 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ static int		get_socket(int port)
 static t_bool	setup_basedir(t_master_env *menv)
 {
 	char	*path;
+	t_bool	ret;
 
 	if (menv->base_dir)
 	{
@@ -75,19 +76,15 @@ static t_bool	setup_basedir(t_master_env *menv)
 			menv->env.log(&menv->env, "successfully changed directory to %s",
 					menv->base_dir);
 	}
+	ret = false;
+	path = NULL;
 	if (!(path = getcwd(NULL, 0)))
-	{
 		menv->env.log(&menv->env, "getcwd: %s", strerror(errno));
-		return (false);
-	}
-	if (setenv("PWD", path, 1) != 0)
-	{
+	else if (setenv("PWD", path, 1) != 0)
 		menv->env.log(&menv->env, "setenv: %s", strerror(errno));
-		free(path);
-		return (false);
-	}
-	free(path);
-	return (true);
+	else
+		ret = true;
+	return (ret);
 }
 
 /*

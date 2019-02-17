@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:32 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 14:57:39 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:10:44 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ typedef struct	s_command
 	t_bool		(*exec)(char * const *args,
 			char const **reason, t_env *e);
 }				t_command;
+
+int				create_client(char const *addr, int port);
 
 t_bool			command_exec(char *const *args, char const **reason, t_env *e);
 

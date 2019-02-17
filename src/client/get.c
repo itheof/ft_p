@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 17:05:32 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/17 18:00:04 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:28:08 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,50 +52,39 @@ static t_ecode		get_file_size(char const *filename,
 	return (err);
 }
 
-static t_ecode		finalize_handshake(t_bool success,
-		char const **reason, t_env *e)
+static t_ecode		transfer_file(t_map *map, t_env *e)
 {
-	t_ecode	err;
-
-	err = message_send(success ? E_MESSAGE_OK : E_MESSAGE_ERR,
-			NULL, 0, e->csock);
-	if (err)
+	if (sock_raw_read(e->csock, map->data, map->size) < 0)
 	{
-		*reason = error_get_string(err);
+		e->log(e, "get: read(): %s", strerror(errno));
 		e->should_quit = true;
-		return (err);
+		return (E_ERR_READ);
 	}
-	else
-		return (E_ERR_OK);
+	return (E_ERR_OK);
 }
 
-t_bool				exec_cmd_get(char *const *args, char const **reason, t_env *e)
+t_bool				exec_cmd_get(char *const *args,
+		char const **reason, t_env *e)
 {
 	t_map	map;
 	t_ecode	err;
 
 	if ((err = get_file_size(args[1], &map.size, reason, e)))
 		return (false);
-	if ((err = file_map_wr(ft_basename(args[1]), map.size, &map))) 
+	if ((err = file_map_wr(ft_basename(args[1]), map.size, &map)))
 	{
 		e->log(e, "get: %s: %s", error_get_string(err), strerror(errno));
-		finalize_handshake(false, reason, e);
+		if (message_send(E_MESSAGE_ERR, NULL, 0, e->csock) != E_ERR_OK)
+			e->should_quit = true;
 		*reason = error_get_string(err);
 		return (false);
 	}
-	if ((err = finalize_handshake(true, reason, e)))
-	{
-		file_unmap(&map);
-		return (false);
-	}
-	if (sock_raw_read(e->csock, map.data, map.size) < 0)
-	{
-		e->log(e, "get: read(): %s", strerror(errno));
-		file_unmap(&map);
+	if (!(err = message_send(E_MESSAGE_OK, NULL, 0, e->csock)))
+		err = transfer_file(&map, e);
+	else
 		e->should_quit = true;
-		*reason = error_get_string(E_ERR_READ);
-		return (false);
-	}
+	if (err)
+		*reason = error_get_string(err);
 	file_unmap(&map);
-	return (true);
+	return (err == E_ERR_OK);
 }

@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/17 17:59:15 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:37:16 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,19 @@ static t_ecode	server_transfer(void *map, off_t size, t_env *e)
 	return (E_ERR_OK);
 }
 
+static t_ecode	abort_transfer(t_ecode err, t_env *e)
+{
+	e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
+	if (message_send(E_MESSAGE_ERR, strerror(errno),
+				ft_strlen(strerror(errno)), e->csock) != E_ERR_OK)
+	{
+		e->should_quit = true;
+		return (E_ERR_WRITE);
+	}
+	else
+		return (err);
+}
+
 t_ecode			put_op_handler(t_message *msg, t_env *e)
 {
 	t_map	map;
@@ -82,17 +95,7 @@ t_ecode			put_op_handler(t_message *msg, t_env *e)
 	if ((err = sanitize_filename(msg->payload, e)))
 		return (err);
 	if ((err = file_map_wr(msg->payload, map.size, &map)))
-	{
-		e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
-		if (message_send(E_MESSAGE_ERR, strerror(errno),
-					ft_strlen(strerror(errno)), e->csock) != E_ERR_OK)
-		{
-			e->should_quit = true;
-			return (E_ERR_WRITE);
-		}
-		else
-			return (err);
-	}
+		return (abort_transfer(err, e));
 	if ((err = message_send(E_MESSAGE_OK, NULL, 0, e->csock)))
 		e->should_quit = true;
 	else
