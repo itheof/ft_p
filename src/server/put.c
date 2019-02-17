@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/17 17:38:20 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 17:58:02 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 static const char	g_not_basename_err[] = "put: file must be a single path "
 "component, relative to the current directory";
-
-static const char	g_exists_err[] = "put: file exists";
 
 /*
 ** TODO: enhance to -> is_same_dir
@@ -30,31 +28,6 @@ static t_bool	is_basename(char const *path)
 	return (ft_strchr(path, '/') == NULL);
 }
 
-static t_bool	file_exists(char const *filename, t_env *e)
-{
-	struct dirent	*dp;
-	t_bool			ret;
-	DIR				*dirp;
-
-	dirp = opendir(".");
-	if (dirp == NULL)
-	{
-		e->log(e, "put: opendir() failed: %s", strerror(errno));
-		return (false);
-	}
-	ret = true;
-	while ((dp = readdir(dirp)) != NULL)
-	{
-		if (!strcmp(dp->d_name, filename))
-		{
-			ret = false;
-			break ;
-		}
-	}
-	closedir(dirp);
-	return (ret);
-}
-
 static t_ecode	sanitize_filename(char const *filename, t_env *e)
 {
 	t_ecode	err;
@@ -63,14 +36,6 @@ static t_ecode	sanitize_filename(char const *filename, t_env *e)
 	{
 		if ((err = message_send(E_MESSAGE_ERR, g_not_basename_err,
 					sizeof(g_not_basename_err), e->csock)))
-			return (err);
-		else
-			return (E_ERR_INVALID_PAYLOAD);
-	}
-	if (!file_exists(filename, e))
-	{
-		if ((err = message_send(E_MESSAGE_ERR, g_exists_err,
-					sizeof(g_exists_err), e->csock)))
 			return (err);
 		else
 			return (E_ERR_INVALID_PAYLOAD);
@@ -128,8 +93,8 @@ t_ecode			put_op_handler(t_message *msg, t_env *e)
 	if ((err = file_map_wr(msg->payload, map.size, &map)))
 	{
 		e->log(e, "put: %s: %s", error_get_string(err), strerror(errno));
-		if (message_send(E_MESSAGE_ERR, strerror(err),
-					ft_strlen(strerror(err)), e->csock) != E_ERR_OK)
+		if (message_send(E_MESSAGE_ERR, strerror(errno),
+					ft_strlen(strerror(errno)), e->csock) != E_ERR_OK)
 		{
 			e->should_quit = true;
 			return (E_ERR_WRITE);
