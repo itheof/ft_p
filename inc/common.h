@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:17:48 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/17 17:34:45 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:00:31 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,8 @@ ssize_t			sock_raw_write(int fildes, void const *buf, ssize_t nbyte);
 t_ecode			file_map_rd(char const *path, t_map *dst);
 t_ecode			file_map_wr(char const *path, off_t size, t_map *dst);
 void			file_unmap(t_map *map);
+
+t_bool			is_basename(char const *path);
+char const		*ft_basename(char const *path);
 
 #endif

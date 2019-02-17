@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 16:51:51 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/17 17:58:02 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 17:59:15 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,6 @@ static const char	g_not_basename_err[] = "put: file must be a single path "
 /*
 ** TODO: enhance to -> is_same_dir
 */
-
-static t_bool	is_basename(char const *path)
-{
-	if (!ft_strcmp(".", path))
-		return (false);
-	else if (!ft_strcmp("..", path))
-		return (false);
-	return (ft_strchr(path, '/') == NULL);
-}
 
 static t_ecode	sanitize_filename(char const *filename, t_env *e)
 {

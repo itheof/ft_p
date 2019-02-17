@@ -6,7 +6,7 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 14:25:55 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/16 16:15:40 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:00:10 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,24 @@ int		ft_atoi_sane(char const *s, t_bool *sane)
 		*sane = true;
 	free(tmp);
 	return (i);
+}
+
+t_bool	is_basename(char const *path)
+{
+	if (!ft_strcmp(".", path))
+		return (false);
+	else if (!ft_strcmp("..", path))
+		return (false);
+	return (ft_strchr(path, '/') == NULL);
+}
+
+char const	*ft_basename(char const *path)
+{
+	char const	*dir;
+
+	dir = ft_strrchr(path, '/');
+	if (dir)
+		return (dir + 1);
+	else
+		return (path);
 }

@@ -6,22 +6,11 @@
 /*   By: tvallee <tvallee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/09 17:05:32 by tvallee           #+#    #+#             */
-/*   Updated: 2019/02/17 17:38:35 by tvallee          ###   ########.fr       */
+/*   Updated: 2019/02/17 18:00:04 by tvallee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
-
-static char const	*ft_basename(char const *path)
-{
-	char const	*dir;
-
-	dir = ft_strrchr(path, '/');
-	if (dir)
-		return (dir + 1);
-	else
-		return (path);
-}
 
 static t_ecode		handle_response(t_message *msg, off_t *sizep, t_env *e)
 {
